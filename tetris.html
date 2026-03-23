@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fenerbahçe Tetris</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a1128;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+    color: #FFED00;
+    overflow: hidden;
+  }
+
+  #header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  #fb-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  #header h1 {
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    color: #FFED00;
+    text-shadow: 0 0 12px #FFED0088;
+    text-transform: uppercase;
+  }
+
+  #header h1 span {
+    color: #fff;
+  }
+
+  #game-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  #board-container {
+    position: relative;
+  }
+
+  canvas#board {
+    border: 2px solid #FFED00;
+    display: block;
+    box-shadow: 0 0 30px #FFED0044, inset 0 0 20px #00000066;
+  }
+
+  #overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10,17,40,0.88);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+  }
+
+  #overlay h2 {
+    font-size: 2rem;
+    color: #FFED00;
+    text-shadow: 0 0 14px #FFED00;
+    letter-spacing: 4px;
+  }
+
+  #overlay p { color: #aaa; font-size: 0.9rem; }
+
+  #overlay button {
+    margin-top: 8px;
+    padding: 11px 32px;
+    background: #FFED00;
+    color: #0a1128;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 2px;
+    box-shadow: 0 0 14px #FFED0066;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  #overlay button:hover {
+    background: #fff176;
+    box-shadow: 0 0 22px #FFED00aa;
+  }
+
+  #side {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 120px;
+  }
+
+  .panel {
+    background: #111d40;
+    border: 1px solid #FFED0055;
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+
+  .panel h3 {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: #FFED0099;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .panel .value {
+    font-size: 1.5rem;
+    color: #FFED00;
+    text-shadow: 0 0 8px #FFED0066;
+  }
+
+  canvas#next { display: block; }
+
+  #controls {
+    font-size: 0.72rem;
+    color: #555;
+    line-height: 1.9;
+  }
+  #controls span { color: #FFED00; }
+
+  /* Footballer popup */
+  #player-popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    pointer-events: none;
+  }
+
+  #player-popup.show { display: flex; }
+
+  #player-card {
+    background: linear-gradient(145deg, #1B2A5E, #0a1128);
+    border: 3px solid #FFED00;
+    border-radius: 16px;
+    padding: 20px 28px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 0 40px #FFED0066, 0 0 80px #FFED0022;
+    animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    min-width: 200px;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.5) rotate(-8deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  #player-card .card-title {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: #FFED0099;
+    text-transform: uppercase;
+  }
+
+  #player-card canvas#jersey-canvas {
+    display: block;
+  }
+
+  #player-card .player-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #FFED00;
+    text-shadow: 0 0 10px #FFED00;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  #player-card .player-info {
+    font-size: 0.78rem;
+    color: #aaa;
+    letter-spacing: 1px;
+  }
+
+  #player-card .cleared-badge {
+    background: #FFED00;
+    color: #0a1128;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <canvas id="fb-logo" width="52" height="52"></canvas>
+  <h1>Fenerbahçe <span>Tetris</span></h1>
+</div>
+
+<div id="game-wrapper">
+  <div id="board-container">
+    <canvas id="board" width="300" height="600"></canvas>
+    <div id="overlay">
+      <h2>&#9917; FENERBAHÇE</h2>
+      <p>Satırları temizle, futbolcuları keşfet!</p>
+      <button id="startBtn">Oyunu Başlat</button>
+    </div>
+  </div>
+
+  <div id="side">
+    <div class="panel">
+      <h3>Skor</h3>
+      <div class="value" id="score">0</div>
+    </div>
+    <div class="panel">
+      <h3>Satır</h3>
+      <div class="value" id="lines">0</div>
+    </div>
+    <div class="panel">
+      <h3>Seviye</h3>
+      <div class="value" id="level">1</div>
+    </div>
+    <div class="panel">
+      <h3>Sıradaki</h3>
+      <canvas id="next" width="100" height="100"></canvas>
+    </div>
+    <div class="panel" id="controls">
+      <span>←→</span> Hareket<br>
+      <span>↑</span> Döndür<br>
+      <span>↓</span> Yavaş<br>
+      <span>Space</span> Hızlı<br>
+      <span>P</span> Duraklat
+    </div>
+  </div>
+</div>
+
+<!-- Footballer popup -->
+<div id="player-popup">
+  <div id="player-card">
+    <div class="card-title">&#127942; Fenerbahçe Efsanesi</div>
+    <canvas id="jersey-canvas" width="120" height="130"></canvas>
+    <div class="player-name" id="popup-name">Alex de Souza</div>
+    <div class="player-info" id="popup-info">#10 · Orta Saha</div>
+    <div class="cleared-badge" id="popup-badge">1 Satır Temizlendi!</div>
+  </div>
+</div>
+
+<script>
+// ─── Fenerbahçe Players ───────────────────────────────────────────────────────
+const FB_PLAYERS = [
+  { name: 'Alex de Souza',     number: 10, pos: 'Orta Saha',      era: '2004–2012', jerseyColor: '#FFED00' },
+  { name: 'Roberto Carlos',    number:  6, pos: 'Sol Bek',         era: '2007–2009', jerseyColor: '#1B2A5E' },
+  { name: 'Emre Belözoğlu',    number:  8, pos: 'Orta Saha',      era: '2008–2011', jerseyColor: '#FFED00' },
+  { name: 'Nicolas Anelka',    number:  9, pos: 'Forvet',          era: '2005–2006', jerseyColor: '#1B2A5E' },
+  { name: 'Jay Jay Okocha',    number: 10, pos: 'Orta Saha',      era: '2002–2003', jerseyColor: '#FFED00' },
+  { name: 'Moussa Sow',        number:  9, pos: 'Forvet',          era: '2012–2015', jerseyColor: '#1B2A5E' },
+  { name: 'Robin van Persie',  number:  9, pos: 'Forvet',          era: '2015–2018', jerseyColor: '#FFED00' },
+  { name: 'P. van Hooijdonk',  number:  9, pos: 'Forvet',          era: '2000–2001', jerseyColor: '#1B2A5E' },
+  { name: 'Suat Mamat',        number:  7, pos: 'Sağ Kanat',       era: '1952–1966', jerseyColor: '#FFED00' },
+  { name: 'Lefter Küçükand.',  number: 11, pos: 'Sol Kanat',       era: '1947–1964', jerseyColor: '#1B2A5E' },
+  { name: 'Can Bartu',         number: 10, pos: 'Orta Saha',      era: '1955–1967', jerseyColor: '#FFED00' },
+  { name: 'Tuncay Şanlı',      number: 19, pos: 'Forvet',          era: '1999–2005', jerseyColor: '#1B2A5E' },
+  { name: 'Dries Mertens',     number: 10, pos: 'Forvet',          era: '2022–2023', jerseyColor: '#FFED00' },
+  { name: 'Edin Džeko',        number:  9, pos: 'Forvet',          era: '2021–2022', jerseyColor: '#1B2A5E' },
+  { name: 'Szymanski',         number: 10, pos: 'Orta Saha',      era: '2023–',     jerseyColor: '#FFED00' },
+  { name: 'Batshuayi',         number:  9, pos: 'Forvet',          era: '2023–2024', jerseyColor: '#1B2A5E' },
+];
+
+// ─── Draw FB Logo ─────────────────────────────────────────────────────────────
+(function drawLogo() {
+  const c = document.getElementById('fb-logo');
+  const g = c.getContext('2d');
+  const cx = 26, cy = 26, r = 24;
+
+  // Circle halves: left dark blue, right yellow
+  g.beginPath(); g.arc(cx, cy, r, Math.PI/2, 3*Math.PI/2); g.fillStyle = '#1B2A5E'; g.fill();
+  g.beginPath(); g.arc(cx, cy, r, -Math.PI/2, Math.PI/2); g.fillStyle = '#FFED00'; g.fill();
+
+  // Border
+  g.beginPath(); g.arc(cx, cy, r, 0, 2*Math.PI);
+  g.strokeStyle = '#FFED00'; g.lineWidth = 2; g.stroke();
+
+  // "FB" letters
+  g.font = 'bold 18px Courier New';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  // F on blue side
+  g.fillStyle = '#FFED00';
+  g.fillText('F', cx - 7, cy);
+  // B on yellow side
+  g.fillStyle = '#1B2A5E';
+  g.fillText('B', cx + 7, cy);
+})();
+
+// ─── Draw Jersey on canvas ────────────────────────────────────────────────────
+function drawJersey(canvas, player) {
+  const g = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const mainC = player.jerseyColor;
+  const secC  = mainC === '#FFED00' ? '#1B2A5E' : '#FFED00';
+  const textC = mainC === '#FFED00' ? '#1B2A5E' : '#FFED00';
+
+  g.clearRect(0, 0, W, H);
+
+  // Jersey body path
+  const jx = 20, jy = 30, jw = 80, jh = 80;
+
+  // Sleeves
+  g.beginPath();
+  g.moveTo(jx, jy + 10);
+  g.lineTo(jx - 18, jy + 30);
+  g.lineTo(jx - 10, jy + 40);
+  g.lineTo(jx + 8, jy + 26);
+  g.lineTo(jx + 8, jy + jh);
+  g.lineTo(jx + jw - 8, jy + jh);
+  g.lineTo(jx + jw - 8, jy + 26);
+  g.lineTo(jx + jw + 10, jy + 40);
+  g.lineTo(jx + jw + 18, jy + 30);
+  g.lineTo(jx + jw, jy + 10);
+  // Neck
+  g.quadraticCurveTo(jx + jw/2 + 16, jy, jx + jw/2 + 10, jy);
+  g.quadraticCurveTo(jx + jw/2, jy - 12, jx + jw/2 - 10, jy);
+  g.quadraticCurveTo(jx + jw/2 - 16, jy, jx, jy + 10);
+  g.closePath();
+  g.fillStyle = mainC;
+  g.fill();
+
+  // Stripe on shoulders (secondary color)
+  g.beginPath();
+  g.moveTo(jx, jy + 10);
+  g.lineTo(jx + 8, jy + 26);
+  g.lineTo(jx + jw - 8, jy + 26);
+  g.lineTo(jx + jw, jy + 10);
+  g.quadraticCurveTo(jx + jw/2 + 16, jy, jx + jw/2 + 10, jy);
+  g.quadraticCurveTo(jx + jw/2, jy - 12, jx + jw/2 - 10, jy);
+  g.quadraticCurveTo(jx + jw/2 - 16, jy, jx, jy + 10);
+  g.closePath();
+  g.fillStyle = secC;
+  g.fill();
+
+  // Jersey outline
+  g.strokeStyle = secC === '#1B2A5E' ? '#FFED00' : '#1B2A5E';
+  g.lineWidth = 1.5;
+  g.stroke();
+
+  // Player number
+  g.font = 'bold 30px Courier New';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillStyle = textC;
+  g.fillText(player.number, jx + jw / 2, jy + jh - 20);
+
+  // Era
+  g.font = '9px Courier New';
+  g.fillStyle = textC + '99';
+  g.fillText(player.era, jx + jw / 2, jy + jh + 10);
+}
+
+// ─── Popup logic ──────────────────────────────────────────────────────────────
+let popupTimeout = null;
+let lastPlayerIdx = -1;
+
+function showPlayerPopup(clearedCount) {
+  // Pick a player (no repeat)
+  let idx;
+  do { idx = Math.floor(Math.random() * FB_PLAYERS.length); }
+  while (idx === lastPlayerIdx && FB_PLAYERS.length > 1);
+  lastPlayerIdx = idx;
+
+  const p = FB_PLAYERS[idx];
+  drawJersey(document.getElementById('jersey-canvas'), p);
+  document.getElementById('popup-name').textContent = p.name;
+  document.getElementById('popup-info').textContent = `#${p.number} · ${p.pos}`;
+  const badges = ['', '1 Satır Temizlendi!', '2 Satır! Harika!', '3 Satır! Muhteşem!', 'TETRIS! EFSANEVİ! 🔥'];
+  document.getElementById('popup-badge').textContent = badges[Math.min(clearedCount, 4)];
+
+  const popup = document.getElementById('player-popup');
+  popup.classList.add('show');
+
+  if (popupTimeout) clearTimeout(popupTimeout);
+  const showTime = 1500 + clearedCount * 400;
+  popupTimeout = setTimeout(() => { popup.classList.remove('show'); }, showTime);
+}
+
+// ─── Tetris Engine ────────────────────────────────────────────────────────────
+const COLS = 10, ROWS = 20, BLOCK = 30;
+
+// FB-themed tetromino colors
+const COLORS = [
+  null,
+  '#00D4FF', // I - cyan
+  '#FFED00', // O - FB yellow
+  '#FF6B35', // T - orange
+  '#00C853', // S - green
+  '#FF1744', // Z - red
+  '#1B2A5E', // J - FB blue
+  '#FF9800', // L - amber
+];
+
+const SHAPES = [
+  null,
+  [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+  [[2,2],[2,2]],
+  [[0,3,0],[3,3,3],[0,0,0]],
+  [[0,4,4],[4,4,0],[0,0,0]],
+  [[5,5,0],[0,5,5],[0,0,0]],
+  [[6,0,0],[6,6,6],[0,0,0]],
+  [[0,0,7],[7,7,7],[0,0,0]],
+];
+
+const canvas  = document.getElementById('board');
+const ctx     = canvas.getContext('2d');
+const nextCvs = document.getElementById('next');
+const nctx    = nextCvs.getContext('2d');
+const overlay = document.getElementById('overlay');
+const startBtn = document.getElementById('startBtn');
+
+let board, piece, nextPiece, score, lines, level, dropInterval, lastTime, animId, paused, gameOver;
+let dropCounter = 0;
+
+function createBoard() {
+  return Array.from({length: ROWS}, () => Array(COLS).fill(0));
+}
+
+function randomPiece() {
+  const type  = Math.floor(Math.random() * 7) + 1;
+  const shape = SHAPES[type].map(r => [...r]);
+  return { type, shape, x: Math.floor(COLS/2) - Math.floor(shape[0].length/2), y: 0 };
+}
+
+function collides(b, p, dx=0, dy=0, shape=p.shape) {
+  for (let r = 0; r < shape.length; r++) {
+    for (let c = 0; c < shape[r].length; c++) {
+      if (!shape[r][c]) continue;
+      const nx = p.x + c + dx, ny = p.y + r + dy;
+      if (nx < 0 || nx >= COLS || ny >= ROWS) return true;
+      if (ny >= 0 && b[ny][nx]) return true;
+    }
+  }
+  return false;
+}
+
+function rotate(shape) {
+  const rows = shape.length, cols = shape[0].length;
+  const out = Array.from({length: cols}, () => Array(rows).fill(0));
+  for (let r = 0; r < rows; r++)
+    for (let c = 0; c < cols; c++)
+      out[c][rows - 1 - r] = shape[r][c];
+  return out;
+}
+
+function lock() {
+  piece.shape.forEach((row, r) => {
+    row.forEach((val, c) => {
+      if (val && piece.y + r >= 0)
+        board[piece.y + r][piece.x + c] = val;
+    });
+  });
+  clearLines();
+  piece = nextPiece;
+  nextPiece = randomPiece();
+  drawNext();
+  if (collides(board, piece)) endGame();
+}
+
+function clearLines() {
+  let cleared = 0;
+  for (let r = ROWS - 1; r >= 0; r--) {
+    if (board[r].every(v => v)) {
+      board.splice(r, 1);
+      board.unshift(Array(COLS).fill(0));
+      cleared++;
+      r++;
+    }
+  }
+  if (cleared) {
+    const pts = [0, 100, 300, 500, 800];
+    score += (pts[cleared] || 800) * level;
+    lines += cleared;
+    level = Math.floor(lines / 10) + 1;
+    dropInterval = Math.max(100, 1000 - (level - 1) * 90);
+    updateHUD();
+    showPlayerPopup(cleared);
+  }
+}
+
+function drawBlock(context, x, y, color, size=BLOCK) {
+  // Main block
+  context.fillStyle = color;
+  context.fillRect(x*size+1, y*size+1, size-2, size-2);
+  // Highlight top
+  context.fillStyle = 'rgba(255,255,255,0.18)';
+  context.fillRect(x*size+1, y*size+1, size-2, 4);
+  // Shadow bottom
+  context.fillStyle = 'rgba(0,0,0,0.3)';
+  context.fillRect(x*size+1, y*size+size-5, size-2, 4);
+  // Left shine
+  context.fillStyle = 'rgba(255,255,255,0.08)';
+  context.fillRect(x*size+1, y*size+1, 4, size-2);
+}
+
+function drawBoard() {
+  // Background
+  ctx.fillStyle = '#07101f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Grid lines — subtle FB blue
+  ctx.strokeStyle = '#1B2A5E55';
+  ctx.lineWidth = 0.5;
+  for (let r = 0; r < ROWS; r++) {
+    ctx.beginPath(); ctx.moveTo(0, r*BLOCK); ctx.lineTo(COLS*BLOCK, r*BLOCK); ctx.stroke();
+  }
+  for (let c = 0; c < COLS; c++) {
+    ctx.beginPath(); ctx.moveTo(c*BLOCK, 0); ctx.lineTo(c*BLOCK, ROWS*BLOCK); ctx.stroke();
+  }
+
+  board.forEach((row, r) => {
+    row.forEach((val, c) => {
+      if (val) drawBlock(ctx, c, r, COLORS[val]);
+    });
+  });
+}
+
+function ghostY() {
+  let dy = 0;
+  while (!collides(board, piece, 0, dy+1)) dy++;
+  return piece.y + dy;
+}
+
+function drawPiece() {
+  const gy = ghostY();
+  // Ghost
+  piece.shape.forEach((row, r) => {
+    row.forEach((val, c) => {
+      if (val) {
+        ctx.fillStyle = 'rgba(255,237,0,0.08)';
+        ctx.fillRect((piece.x+c)*BLOCK+1, (gy+r)*BLOCK+1, BLOCK-2, BLOCK-2);
+        ctx.strokeStyle = 'rgba(255,237,0,0.25)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect((piece.x+c)*BLOCK+1, (gy+r)*BLOCK+1, BLOCK-2, BLOCK-2);
+      }
+    });
+  });
+  // Actual piece
+  piece.shape.forEach((row, r) => {
+    row.forEach((val, c) => {
+      if (val) drawBlock(ctx, piece.x+c, piece.y+r, COLORS[val]);
+    });
+  });
+}
+
+function drawNext() {
+  nctx.fillStyle = '#07101f';
+  nctx.fillRect(0, 0, nextCvs.width, nextCvs.height);
+  const s = nextPiece.shape;
+  const bsize = 20;
+  const offX = Math.floor((nextCvs.width/bsize - s[0].length) / 2);
+  const offY = Math.floor((nextCvs.height/bsize - s.length) / 2);
+  s.forEach((row, r) => {
+    row.forEach((val, c) => {
+      if (val) {
+        nctx.fillStyle = COLORS[val];
+        nctx.fillRect((offX+c)*bsize+1, (offY+r)*bsize+1, bsize-2, bsize-2);
+        nctx.fillStyle = 'rgba(255,255,255,0.15)';
+        nctx.fillRect((offX+c)*bsize+1, (offY+r)*bsize+1, bsize-2, 4);
+      }
+    });
+  });
+}
+
+function updateHUD() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('lines').textContent = lines;
+  document.getElementById('level').textContent  = level;
+}
+
+function loop(time = 0) {
+  const delta = time - lastTime;
+  lastTime = time;
+  if (!paused && !gameOver) {
+    dropCounter += delta;
+    if (dropCounter >= dropInterval) {
+      dropCounter = 0;
+      if (!collides(board, piece, 0, 1)) piece.y++;
+      else lock();
+    }
+    drawBoard();
+    drawPiece();
+  }
+  animId = requestAnimationFrame(loop);
+}
+
+function startGame() {
+  board = createBoard();
+  score = 0; lines = 0; level = 1;
+  dropInterval = 1000; dropCounter = 0;
+  paused = false; gameOver = false;
+  piece = randomPiece();
+  nextPiece = randomPiece();
+  updateHUD();
+  drawNext();
+  overlay.style.display = 'none';
+  cancelAnimationFrame(animId);
+  lastTime = 0;
+  animId = requestAnimationFrame(loop);
+  document.getElementById('player-popup').classList.remove('show');
+}
+
+function endGame() {
+  gameOver = true;
+  overlay.style.display = 'flex';
+  overlay.innerHTML = `
+    <h2>&#9917; OYUN BİTTİ</h2>
+    <p>Skor: ${score} &nbsp;|&nbsp; Satır: ${lines} &nbsp;|&nbsp; Seviye: ${level}</p>
+    <button id="startBtn">Tekrar Oyna</button>
+  `;
+  document.getElementById('startBtn').addEventListener('click', startGame);
+}
+
+function hardDrop() {
+  const dy = ghostY() - piece.y;
+  piece.y += dy;
+  score += dy * 2;
+  updateHUD();
+  lock();
+}
+
+document.addEventListener('keydown', e => {
+  if (gameOver) return;
+  if (e.key === 'p' || e.key === 'P') {
+    paused = !paused;
+    if (!paused) lastTime = performance.now();
+    return;
+  }
+  if (paused) return;
+  switch(e.key) {
+    case 'ArrowLeft':
+      if (!collides(board, piece, -1, 0)) piece.x--;
+      break;
+    case 'ArrowRight':
+      if (!collides(board, piece, 1, 0)) piece.x++;
+      break;
+    case 'ArrowDown':
+      if (!collides(board, piece, 0, 1)) { piece.y++; score++; updateHUD(); }
+      break;
+    case 'ArrowUp': {
+      const rot = rotate(piece.shape);
+      for (const k of [0, -1, 1, -2, 2]) {
+        if (!collides(board, piece, k, 0, rot)) {
+          piece.shape = rot; piece.x += k; break;
+        }
+      }
+      break;
+    }
+    case ' ':
+      e.preventDefault();
+      hardDrop();
+      break;
+  }
+});
+
+startBtn.addEventListener('click', startGame);
+</script>
+</body>
+</html>
