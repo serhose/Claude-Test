@@ -7,7 +7,25 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(gh repo:*)",
-      "Skill(update-config)"
+      "Bash(git push:*)",
+      "Bash(git status:*)",
+      "Skill(update-config)",
+      "Bash(jq:*)",
+      "Bash(python3:*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"C:/Users/akanr/OneDrive/Masaüstü/Claude-Test\" && if [ -n \"$(git status --porcelain)\" ]; then git add -A && git commit -m \"Auto-save: update project files\" && git push origin master; fi",
+            "timeout": 30,
+            "statusMessage": "Auto-committing and pushing changes..."
+          }
+        ]
+      }
     ]
   }
 }
