@@ -14,7 +14,8 @@
       "Bash(python3:*)",
       "Bash(pip install:*)",
       "Bash(python -c \":*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(taskkill /F /IM python.exe)"
     ]
   },
   "hooks": {
