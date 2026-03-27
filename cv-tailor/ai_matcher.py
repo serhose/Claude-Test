@@ -56,7 +56,7 @@ Here is the master CV (source of truth — do not use anything outside this):
 Return the tailored CV as a JSON object following the output format rules."""
 
     response = CLIENT.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-1.5-flash",
         contents=prompt,
     )
 
