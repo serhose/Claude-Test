@@ -1,5 +1,5 @@
 """
-AI Matcher — uses Claude to select and tailor CV content for a job description.
+AI Matcher — uses Google Gemini to select and tailor CV content for a job description.
 Rules:
   - Only uses content that exists in master_cv.json
   - Cannot invent skills, tools, titles, or experience
@@ -9,14 +9,13 @@ Rules:
 
 import os
 import json
-import copy
 import pathlib
-import anthropic
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv(pathlib.Path(__file__).parent.parent / ".env")
 
-CLIENT = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+CLIENT = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 MASTER_CV = json.loads(
     (pathlib.Path(__file__).parent / "master_cv.json").read_text(encoding="utf-8")
 )
@@ -32,8 +31,7 @@ STRICT RULES — you must follow these without exception:
 6. Always include all education entries — they are always relevant.
 7. Always include the volunteer section.
 8. For skills: only list skills/tools that appear in the master CV. Select the most relevant subset.
-9. Target a single-page output. Be selective — prefer quality over quantity of bullets.
-10. Return ONLY valid JSON, no explanation, no markdown code fences.
+9. Return ONLY valid JSON, no explanation, no markdown code fences.
 
 Output format: Return a JSON object with the exact same structure as the master CV (personal, experience, education, volunteer, skills), but containing only the selected/adapted content. Each bullet in experience and volunteer must be an object with "id" and "text" fields."""
 
@@ -43,7 +41,9 @@ def tailor_cv(job_description: str) -> dict:
     Given a job description string, returns a tailored CV dict
     ready to be passed to cv_template.render_cv().
     """
-    user_message = f"""Here is the job description:
+    prompt = f"""{SYSTEM_PROMPT}
+
+Here is the job description:
 
 ---
 {job_description}
@@ -55,16 +55,14 @@ Here is the master CV (source of truth — do not use anything outside this):
 
 Return the tailored CV as a JSON object following the output format rules."""
 
-    response = CLIENT.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=4096,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_message}],
+    response = CLIENT.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt,
     )
 
-    raw = response.content[0].text.strip()
+    raw = response.text.strip()
 
-    # Strip markdown code fences if model included them despite instructions
+    # Strip markdown code fences if model included them
     if raw.startswith("```"):
         raw = raw.split("```")[1]
         if raw.startswith("json"):
@@ -74,19 +72,14 @@ Return the tailored CV as a JSON object following the output format rules."""
     try:
         tailored = json.loads(raw)
     except json.JSONDecodeError as e:
-        raise ValueError(f"Claude returned invalid JSON: {e}\n\nRaw output:\n{raw}")
+        raise ValueError(f"Gemini returned invalid JSON: {e}\n\nRaw output:\n{raw}")
 
-    # Safety pass: ensure no hallucinated skills sneaked in
     tailored = _safety_filter(tailored)
-
     return tailored
 
 
 def _safety_filter(tailored: dict) -> dict:
-    """
-    Post-process safety check: remove any skill/tool that isn't
-    in the master CV's skills.technical list.
-    """
+    """Remove any skill/tool that isn't in the master CV's skills.technical list."""
     allowed_technical = set(s.lower() for s in MASTER_CV["skills"]["technical"])
 
     if "skills" in tailored and "technical" in tailored["skills"]:
@@ -99,7 +92,6 @@ def _safety_filter(tailored: dict) -> dict:
 
 
 if __name__ == "__main__":
-    # Quick test with a sample job description
     sample_jd = """
     We are looking for a Financial Analyst to join our team.
 
@@ -117,11 +109,9 @@ if __name__ == "__main__":
     - Experience with Power BI or similar visualization tools
     """
 
-    print("Calling Claude API...")
+    print("Calling Gemini API...")
     result = tailor_cv(sample_jd)
-    print("\nTailored CV structure:")
-    print(json.dumps(result, indent=2, ensure_ascii=False)[:2000])
-    print("\n[truncated — full output in tailored_test.json]")
-    pathlib.Path("tailored_test.json").write_text(
-        json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    print("Success!")
+    out = pathlib.Path("tailored_test.json")
+    out.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"Written to {out}")
