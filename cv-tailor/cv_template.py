@@ -113,8 +113,6 @@ class CVCanvas:
         self._text(MARGIN_LEFT, self.y, title, "Calibri-Bold", SIZE_SECTION)
         self._move(LINE_HEIGHT_SECTION - 2)
 
-        # Rule immediately under text
-        self._rule(self.y)
         self._move(SECTION_GAP_AFTER)
 
     def draw_company_line(self, company, location):
