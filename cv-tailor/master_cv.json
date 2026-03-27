@@ -1,0 +1,350 @@
+{
+  "personal": {
+    "name": "MELDA AKAN",
+    "location": "Arlington, Virginia, USA",
+    "phone": "(571) 622 7403",
+    "email": "melda_akan@gwu.edu",
+    "linkedin": "https://www.linkedin.com/in/mkarasahin/"
+  },
+
+  "experience": [
+    {
+      "id": "gw_research",
+      "company": "THE GEORGE WASHINGTON UNIVERSITY",
+      "location": "Washington, DC",
+      "title": "Graduate Research Assistant",
+      "start": "January 2024",
+      "end": "January 2026",
+      "tags": ["research", "data", "policy", "economics", "statistics", "public_finance", "academia"],
+      "bullets": [
+        {
+          "id": "gw_r1",
+          "text": "Coordinated all student support activities for the Public Finance (Taxation) course across three semesters.",
+          "tags": ["teaching", "public_finance", "coordination"]
+        },
+        {
+          "id": "gw_r2",
+          "text": "Compiled a comprehensive report through literature review, cross-country policy comparison, and data collection to support faculty research on tax design, informing discussions on fiscal equity and efficiency.",
+          "tags": ["research", "policy", "public_finance", "data_collection", "reporting"]
+        },
+        {
+          "id": "gw_r3",
+          "text": "Conducted a detailed policy analysis on Australia's family tax benefit system, including its historical development, measurement frameworks, and fiscal impact.",
+          "tags": ["policy", "public_finance", "economics", "analysis"]
+        },
+        {
+          "id": "gw_r4",
+          "text": "Contributed to broader analysis of social protection policies and women's labor force participation.",
+          "tags": ["policy", "economics", "social_policy", "research"]
+        },
+        {
+          "id": "gw_r5",
+          "text": "Identifying and extracting severance-related variables across multiple SIPP panels (1983–2024) to construct a consistent annual time series of severance receipt data.",
+          "tags": ["data", "statistics", "stata", "research", "time_series"]
+        },
+        {
+          "id": "gw_r6",
+          "text": "Conducting ongoing data cleaning and exploratory analysis in STATA, ensuring cross-year comparability and reliability for future publication.",
+          "tags": ["stata", "data", "data_cleaning", "research", "statistics"]
+        }
+      ]
+    },
+    {
+      "id": "worldbank",
+      "company": "THE WORLD BANK",
+      "location": "Washington, DC",
+      "title": "Summer Research and Analytics Consultant",
+      "start": "May 2025",
+      "end": "August 2025",
+      "tags": ["finance", "analytics", "reporting", "ai", "data", "consulting"],
+      "bullets": [
+        {
+          "id": "wb_1",
+          "text": "Facilitated the digital transformation of financial data management and visualization systems by leading the migration of 300+ reporting templates from Excel to an AI-driven platform, reducing processing time by 40%, strengthening real-time outcome tracking, and ensuring system readiness for the annual financial close.",
+          "tags": ["ai", "data", "digital_transformation", "finance", "reporting", "excel", "project_management"]
+        },
+        {
+          "id": "wb_2",
+          "text": "Developed and delivered Management Discussion & Analysis (MD&A) content and financial statement disclosures, supporting transparent reporting of financial performance and position.",
+          "tags": ["finance", "financial_reporting", "mda", "disclosures", "accounting"]
+        },
+        {
+          "id": "wb_3",
+          "text": "Produced analytical reports and disclosures that strengthened accountability and transparency, aligning financial performance narratives with the World Bank's outcome-oriented reporting frameworks.",
+          "tags": ["finance", "reporting", "analytics", "accountability"]
+        },
+        {
+          "id": "wb_4",
+          "text": "Analyzed and synthesized financial and economic data to identify performance drivers, providing insights that informed strategic decision-making and development outcomes.",
+          "tags": ["finance", "analytics", "data", "economics", "strategy"]
+        },
+        {
+          "id": "wb_5",
+          "text": "Identified and documented key financial trends and performance drivers, incorporating market insights to support business initiatives, investment decisions, and strategic financial opportunities.",
+          "tags": ["finance", "market_analysis", "strategy", "investment", "reporting"]
+        }
+      ]
+    },
+    {
+      "id": "turkish_airlines",
+      "company": "TURKISH AIRLINES",
+      "location": "Istanbul, Turkey",
+      "roles": [
+        {"title": "Senior Global Corporate Account Manager", "start": "May 2019", "end": "March 2022"},
+        {"title": "Global Corporate Account Manager", "start": "May 2016", "end": "May 2019"}
+      ],
+      "tags": ["sales", "account_management", "project_management", "product", "marketing", "negotiation", "strategy", "b2b"],
+      "bullets": [
+        {
+          "id": "ta_1",
+          "text": "Launched a new SME-focused product by coordinating local sales teams and partnering with IT, driving a digital transformation in client onboarding and service delivery that resulted in 10,000 new clients within 3 months.",
+          "tags": ["product", "digital_transformation", "sales", "project_management", "it"]
+        },
+        {
+          "id": "ta_2",
+          "text": "Designed the product including its marketing strategy, target analysis, and policy formulation.",
+          "tags": ["product", "marketing", "strategy", "analysis"]
+        },
+        {
+          "id": "ta_3",
+          "text": "Directed the project using PMP methodologies, especially for time and team management.",
+          "tags": ["project_management", "pmp", "leadership", "team_management"]
+        },
+        {
+          "id": "ta_4",
+          "text": "Led contract negotiation processes with global TMCs and global clients; added over 26 new markets to the portfolio in 6 years and handled all relations related to over 35 markets.",
+          "tags": ["negotiation", "contracts", "account_management", "global", "sales"]
+        },
+        {
+          "id": "ta_5",
+          "text": "Developed dashboards by analyzing clients' travel policies and revenue potential; increased revenue on targeted O&Ds by over 20% for three consecutive years without increasing incentive cost.",
+          "tags": ["data", "analytics", "dashboards", "revenue", "kpi", "power_bi"]
+        },
+        {
+          "id": "ta_6",
+          "text": "Managed relationships with Fortune 500 companies, including Google, Rolls-Royce, and Mastercard.",
+          "tags": ["account_management", "stakeholder_management", "b2b", "enterprise"]
+        },
+        {
+          "id": "ta_7",
+          "text": "Created marketing campaigns for corporate clients and Travel Management Companies (TMCs) at a global level; managed $600k/year budget, monitored actual performance, and analyzed variances.",
+          "tags": ["marketing", "budget_management", "campaigns", "global", "finance"]
+        }
+      ]
+    },
+    {
+      "id": "siemens",
+      "company": "SIEMENS",
+      "location": "Istanbul, Turkey",
+      "title": "Marketing & Proposal Manager",
+      "start": "May 2013",
+      "end": "May 2016",
+      "tags": ["energy", "engineering", "proposals", "marketing", "strategy", "b2b", "emea"],
+      "bullets": [
+        {
+          "id": "si_1",
+          "text": "Organized complex bid activities for the solutions team and ensured the creation and maintenance of bid files; prepared more than 25 solution proposals for EMEA and Turkish smart grid clients.",
+          "tags": ["proposals", "energy", "bid_management", "emea"]
+        },
+        {
+          "id": "si_2",
+          "text": "Represented technical, commercial, and financial aspects during negotiations with international clients such as Saudi Aramco, TANAP, and LEPCO.",
+          "tags": ["negotiation", "energy", "international", "technical", "commercial"]
+        },
+        {
+          "id": "si_3",
+          "text": "Coordinated with legal, tax, and financing experts to prepare comprehensive bids, ensuring compliance with internal and external guidelines.",
+          "tags": ["legal", "compliance", "finance", "proposals", "coordination"]
+        },
+        {
+          "id": "si_4",
+          "text": "Defined and investigated market needs, trends, and the portfolio to create and implement the best business approach; contributed to the global marketing portfolio on a bi-monthly basis.",
+          "tags": ["market_analysis", "strategy", "marketing", "portfolio"]
+        },
+        {
+          "id": "si_5",
+          "text": "Collaborated with regional teams and sector specialists to design tailored energy and digital grid solutions, improving project success rates and supporting Siemens' global strategy for energy transition and digital transformation.",
+          "tags": ["energy", "digital_transformation", "collaboration", "strategy", "smart_grid"]
+        },
+        {
+          "id": "si_6",
+          "text": "Developed standardized bid templates and knowledge resources to guide regional proposal teams, capturing lessons learned to strengthen consistency and knowledge transfer.",
+          "tags": ["documentation", "knowledge_management", "proposals", "training"]
+        },
+        {
+          "id": "si_7",
+          "text": "Integrated resilience and modernization features into proposals — smart grid, digitalization, and secure transmission systems — to enhance energy sector adaptation and reliability.",
+          "tags": ["energy", "smart_grid", "digitalization", "technical"]
+        },
+        {
+          "id": "si_8",
+          "text": "Crafted detailed business cases for energy infrastructure initiatives, directly contributing to Siemens' global strategy within the energy sector.",
+          "tags": ["business_case", "energy", "strategy", "finance"]
+        }
+      ]
+    }
+  ],
+
+  "education": [
+    {
+      "id": "gw_ms",
+      "institution": "THE GEORGE WASHINGTON UNIVERSITY",
+      "location": "Washington, DC",
+      "degree": "Applied Economics (MS)",
+      "gpa": "4.00/4.00",
+      "start": "January 2024",
+      "end": "December 2025 (Expected)",
+      "tags": ["economics", "finance", "quantitative", "research", "academia"],
+      "highlights": [
+        "Global Leaders Fellowship Awardee",
+        "International Business Ethics and Sustainability Case Competition Winner (2025)",
+        "Dean's High Honor List with 4.00 GPA",
+        "Paper: Economic Analysis of Corporate Expansions and Housing Prices: Amazon HQ2 Case in Arlington"
+      ],
+      "coursework": [
+        "Applied Financial Analysis", "Quantitative Risk Management", "Time Series",
+        "Applied Macroeconomics", "Statistics", "Econometrics", "Applied Microeconomics",
+        "Finance 360", "International Banking", "Economic Development",
+        "Public Finance and Taxation", "Development Economics (PhD Course)"
+      ]
+    },
+    {
+      "id": "gw_exchange",
+      "institution": "THE GEORGE WASHINGTON UNIVERSITY",
+      "location": "Washington, DC",
+      "degree": "International Exchange Student – Economics (BA)",
+      "gpa": "3.70/4.00",
+      "start": "August 2022",
+      "end": "May 2023",
+      "tags": ["economics", "finance", "international"],
+      "highlights": [
+        "International Exchange Student Scholarship (Full Tuition)",
+        "NWC (New Venture Competition) Semi-finalist"
+      ],
+      "coursework": [
+        "Portfolio Management", "Financial Economics", "Econometrics",
+        "Financial Management and Markets", "Economic Development",
+        "Public Finance and Taxation", "Entrepreneurial Leadership"
+      ]
+    },
+    {
+      "id": "bogazici",
+      "institution": "BOGAZICI UNIVERSITY",
+      "location": "Istanbul, Turkey",
+      "degree": "Economics (BA)",
+      "gpa": "3.34/4.00",
+      "start": "August 2020",
+      "end": "December 2024",
+      "tags": ["economics", "quantitative", "research"],
+      "highlights": [
+        "Ranked as the top university / top economics program in Turkey",
+        "Dean's High Honor List (4 semesters); Graduated with Honors"
+      ],
+      "coursework": [
+        "Computing for Economists (R)", "Chinese I-II", "Macroeconomics I-II",
+        "Management Simulation", "Microeconomics I-II", "Statistics I-II",
+        "Game Theory", "Calculus I-II", "International Economics"
+      ]
+    },
+    {
+      "id": "yildiz",
+      "institution": "YILDIZ TECHNICAL UNIVERSITY",
+      "location": "Istanbul, Turkey",
+      "degree": "Innovation, Administration and Entrepreneurship (MBA)",
+      "gpa": "3.93/4.00",
+      "start": "January 2016",
+      "end": "July 2018",
+      "tags": ["management", "strategy", "entrepreneurship", "leadership"],
+      "highlights": [
+        "Dean's list (2016 & 2017); Graduated with High Honors",
+        "Thesis: The Moderating Role of Introversion–Extroversion in the Relationship Between Transformational Leadership and Individual Creativity Across Corporations and Startups"
+      ],
+      "coursework": [
+        "Project Management", "Strategic Management", "Cultural Differences in Business"
+      ]
+    },
+    {
+      "id": "itu",
+      "institution": "ISTANBUL TECHNICAL UNIVERSITY",
+      "location": "Istanbul, Turkey",
+      "degree": "Electrical & Energy Engineering (BS)",
+      "gpa": "3.16/4.00",
+      "start": "September 2008",
+      "end": "June 2013",
+      "tags": ["engineering", "energy", "technical", "electrical"],
+      "highlights": [
+        "Ranked as the top technical university in Istanbul and the top electrical engineering department in Turkey",
+        "Siemens Future Professionals Scholarship, Finansbank Merit Based Scholarship",
+        "Thesis: Modeling of the dynamic behavior of squirrel-cage induction motors"
+      ],
+      "coursework": [
+        "Power Systems Modelling and Analysis", "Electrical Distribution", "Energy Market Pricing",
+        "Linear Algebra", "Differential Equations", "Numerical Methods"
+      ]
+    }
+  ],
+
+  "volunteer": [
+    {
+      "id": "siemens_diversity",
+      "organization": "SIEMENS DIVERSITY CLUB",
+      "location": "Istanbul, Turkey",
+      "title": "Team Leader, Disabled Employee Committee",
+      "start": "September 2014",
+      "end": "September 2015",
+      "tags": ["leadership", "diversity", "inclusion", "csr", "volunteering"],
+      "bullets": [
+        {
+          "id": "vol_1",
+          "text": "Initiated and spearheaded a volunteer team aiming to improve working conditions of employees with disability; reached and positively impacted over 100 disabled employees, fostering a more inclusive and supportive workplace environment physically and emotionally.",
+          "tags": ["diversity", "inclusion", "leadership", "social_impact"]
+        },
+        {
+          "id": "vol_2",
+          "text": "Launched a project enabling disabled candidates to apply to the same job ads on the company website.",
+          "tags": ["inclusion", "digital", "accessibility", "project_management"]
+        }
+      ]
+    }
+  ],
+
+  "skills": {
+    "technical": ["R", "STATA", "Python", "Microsoft Office (advanced)", "VBA", "SQL", "Power BI"],
+    "data": [
+      "Data processing, cleaning, and transformation",
+      "Working with large datasets",
+      "Statistical analysis",
+      "Econometric modeling and regression analysis (OLS, panel data)",
+      "Forecasting and time series analysis",
+      "Financial modeling and valuation (DCF, M&A analysis)"
+    ],
+    "finance": [
+      "Financial analysis and reporting",
+      "Financial statement disclosures",
+      "Management Discussion & Analysis (MD&A)",
+      "Competitive analysis",
+      "Risk management",
+      "Budget management"
+    ],
+    "business": [
+      "Stakeholder engagement",
+      "Proposal management",
+      "Project management (PMP methodologies)",
+      "Account management",
+      "Contract negotiation",
+      "Market analysis"
+    ],
+    "certifications": [
+      "McKinsey Forward Program (2024)",
+      "Build Project – Building 5 Year Financial Plan (2024)",
+      "Build Project – Enterprise Valuation for M&A (2024)",
+      "Draper University Hero Leadership Program (2023)",
+      "Communication for Economists (2025)"
+    ],
+    "languages": [
+      {"language": "Turkish", "level": "Native"},
+      {"language": "English", "level": "Fluent"},
+      {"language": "Chinese", "level": "Beginner"}
+    ]
+  }
+}

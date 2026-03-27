@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Tailor</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f4f6f9;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 40px 44px;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 280px;
+      padding: 14px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      resize: vertical;
+      transition: border-color 0.2s;
+      color: #222;
+      line-height: 1.5;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+    }
+
+    textarea::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      margin-top: 18px;
+      width: 100%;
+      padding: 14px;
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+      background: #4338ca;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 16px;
+      font-size: 0.88rem;
+      min-height: 22px;
+      text-align: center;
+    }
+
+    .status.loading { color: #4f46e5; }
+    .status.error   { color: #dc2626; }
+    .status.success { color: #16a34a; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #4f46e5;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .note {
+      margin-top: 20px;
+      padding: 12px 14px;
+      background: #f0fdf4;
+      border-left: 3px solid #16a34a;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: #166534;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>CV Tailor</h1>
+    <p class="subtitle">Paste a job description and get a tailored PDF CV in seconds.</p>
+
+    <form id="cvForm">
+      <label for="jd">Job Description</label>
+      <textarea
+        id="jd"
+        name="job_description"
+        placeholder="Paste the full job description here — title, responsibilities, requirements..."
+        required
+      ></textarea>
+
+      <button type="submit" id="submitBtn">Generate Tailored CV</button>
+    </form>
+
+    <div class="status" id="status"></div>
+
+    <div class="note">
+      The CV is tailored using only real experience and skills — nothing is fabricated.
+      Only content that matches the job requirements will be included.
+    </div>
+  </div>
+
+  <script>
+    const form     = document.getElementById("cvForm");
+    const statusEl = document.getElementById("status");
+    const submitBtn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const jd = document.getElementById("jd").value.trim();
+      if (!jd) return;
+
+      submitBtn.disabled = true;
+      statusEl.className = "status loading";
+      statusEl.innerHTML = '<span class="spinner"></span> Tailoring your CV — this takes about 15 seconds...';
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch("/generate", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || "Something went wrong.");
+        }
+
+        // Trigger file download
+        const blob = await response.blob();
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement("a");
+        a.href     = url;
+        a.download = "Melda_Akan_CV.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        statusEl.className = "status success";
+        statusEl.textContent = "✓ CV downloaded successfully.";
+      } catch (err) {
+        statusEl.className = "status error";
+        statusEl.textContent = "Error: " + err.message;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
