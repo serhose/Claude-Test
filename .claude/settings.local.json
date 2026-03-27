@@ -11,7 +11,9 @@
       "Bash(git status:*)",
       "Skill(update-config)",
       "Bash(jq:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(pip install:*)",
+      "Bash(python -c \":*)"
     ]
   },
   "hooks": {
