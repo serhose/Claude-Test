@@ -4,7 +4,7 @@ services:
     runtime: python
     rootDir: cv-tailor
     buildCommand: pip install -r cv-tailor/requirements.txt
-    startCommand: cd cv-tailor && gunicorn app:app
+    startCommand: cd cv-tailor && gunicorn app:app --timeout 120 --workers 1
     envVars:
       - key: GEMINI_API_KEY
         sync: false
