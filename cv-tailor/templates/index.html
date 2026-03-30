@@ -343,8 +343,9 @@
         const response = await fetch("/generate", { method: "POST", body: formData });
 
         if (!response.ok) {
+          const raw = await response.text();
           let msg = "Something went wrong.";
-          try { msg = (await response.json()).error || msg; } catch { msg = await response.text(); }
+          try { msg = JSON.parse(raw).error || msg; } catch { msg = raw || msg; }
           throw new Error(msg);
         }
 
