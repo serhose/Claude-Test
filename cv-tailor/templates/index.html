@@ -343,8 +343,9 @@
         const response = await fetch("/generate", { method: "POST", body: formData });
 
         if (!response.ok) {
-          const err = await response.json();
-          throw new Error(err.error || "Something went wrong.");
+          let msg = "Something went wrong.";
+          try { msg = (await response.json()).error || msg; } catch { msg = await response.text(); }
+          throw new Error(msg);
         }
 
         triggerDownload(await response.blob(), "Melda_Akan_CV.docx");
