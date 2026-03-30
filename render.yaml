@@ -3,8 +3,8 @@ services:
     name: cv-tailor
     runtime: python
     rootDir: cv-tailor
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    buildCommand: pip install -r cv-tailor/requirements.txt
+    startCommand: cd cv-tailor && gunicorn app:app
     envVars:
       - key: GEMINI_API_KEY
         sync: false
