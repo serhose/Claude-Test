@@ -341,15 +341,11 @@
       try {
         const formData = new FormData(form);
         const response = await fetch("/generate", { method: "POST", body: formData });
+        const data = await response.json();
 
-        if (!response.ok) {
-          const raw = await response.text();
-          let msg = "Something went wrong.";
-          try { msg = JSON.parse(raw).error || msg; } catch { msg = raw || msg; }
-          throw new Error(msg);
-        }
+        if (!response.ok) throw new Error(data.error || "Something went wrong.");
 
-        triggerDownload(await response.blob(), "Melda_Akan_CV.docx");
+        await downloadLatest();
 
         statusEl.className = "status success";
         statusEl.textContent = "✓ CV downloaded. Use the chat below to refine it.";

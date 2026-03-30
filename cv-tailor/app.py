@@ -47,12 +47,7 @@ def generate():
     _state["cv_data"] = tailored_data
     _state["docx_bytes"] = docx_bytes
 
-    return send_file(
-        io.BytesIO(docx_bytes),
-        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        as_attachment=True,
-        download_name="Melda_Akan_CV.docx",
-    )
+    return jsonify({"ready": True})
 
 
 @app.route("/download")
