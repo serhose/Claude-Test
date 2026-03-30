@@ -189,22 +189,37 @@ Based on the PDFs, the format is:
 - [x] Step 3: Build `ai_matcher.py` — Gemini API with strict prompt (tailor + refine)
 - [x] Step 4: Build `app.py` — Flask routes: /generate, /download, /refine
 - [x] Step 5: Build `templates/index.html` — job form + AI chat refinement panel
-- [ ] Step 6: Test end-to-end with a real job description
+- [x] Step 6: Deployed to Render.com — tested and working end-to-end
 - [ ] Step 7 (later): Add URL scraping for job links
 
 ---
 
-## Setup Notes
+## Setup Notes (Local)
 
 - API key goes in `.env` file as `GEMINI_API_KEY=...`
 - **Never commit `.env` to git**
 - Add `.env` to `.gitignore`
-- Install: `pip install flask python-docx pdfplumber python-dotenv google-genai`
+- Install: `pip install flask gunicorn python-docx pdfplumber python-dotenv google-genai`
+- Run locally: `cd cv-tailor && python app.py` → http://localhost:5000
+
+---
+
+## Deployment (Render.com)
+
+- Platform: **Render.com** (free tier, always-on)
+- Repo: `serhose/Claude-Test`, branch: `master`
+- Root directory is the repo root (render.yaml ignored by Render UI)
+- **Build command:** `pip install -r cv-tailor/requirements.txt`
+- **Start command:** `cd cv-tailor && gunicorn app:app --timeout 120 --workers 1`
+- **Environment variable:** `GEMINI_API_KEY` set in Render dashboard → Environment tab
+- Python version pinned to 3.11.9 via `.python-version` file
+- Timeout set to 120s (Gemini API calls can take ~30-60s)
+- Auto-deploys on every push to `master`
 
 ---
 
 ## Important Reminders
 
-- **Revoke and regenerate the API key** — it was shared in chat. Go to console.anthropic.com → API Keys.
 - The app is for one user (Melda). No auth needed.
-- Output PDF should be downloadable directly from the browser.
+- Output is `.docx` (Word), downloadable directly from the browser.
+- In-memory state: CV data resets on every Render restart (free tier spins down after inactivity).
