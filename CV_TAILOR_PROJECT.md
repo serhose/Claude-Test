@@ -8,8 +8,8 @@ User pastes a job description → AI selects and emphasizes relevant content fro
 ## Tech Stack
 - **Language:** Python
 - **Web framework:** Flask
-- **AI:** Claude API (Anthropic) — model: `claude-sonnet-4-6`
-- **PDF generation:** ReportLab
+- **AI:** Google Gemini API — model: `gemini-2.5-flash`
+- **Word generation:** python-docx
 - **PDF reading (setup only):** pdfplumber
 
 ---
@@ -17,12 +17,12 @@ User pastes a job description → AI selects and emphasizes relevant content fro
 ## Project Structure
 ```
 cv-tailor/
-├── app.py              # Flask server — handles routes
+├── app.py              # Flask server — routes: /generate, /refine, /download
 ├── master_cv.json      # Melda's real data pool (source of truth)
-├── ai_matcher.py       # Claude API call — selects & rewrites content
-├── cv_template.py      # ReportLab PDF generation
+├── ai_matcher.py       # Gemini API — tailor_cv() + refine_cv()
+├── cv_template.py      # python-docx Word generation
 ├── templates/
-│   └── index.html      # Simple UI: paste job text + download button
+│   └── index.html      # UI: job description form + AI chat refinement panel
 ├── .env                # API key (never commit this)
 └── requirements.txt
 ```
@@ -162,29 +162,33 @@ Based on the PDFs, the format is:
 
 ## AI Matching Logic (ai_matcher.py)
 
-**Prompt strategy:**
-1. Send Claude: job description + full master_cv.json
-2. Claude selects which bullet points are most relevant
-3. Claude may reword/reorder bullets but CANNOT invent new skills or experience
-4. Claude returns structured JSON of selected content
-5. Python renders that JSON into PDF
+### `tailor_cv(job_description)` — initial generation
+1. Send Gemini: job description + full master_cv.json
+2. Gemini selects which bullet points are most relevant
+3. May reword/reorder bullets but CANNOT invent new skills or experience
+4. Returns structured JSON → rendered to .docx
 
-**Rules to enforce in the prompt:**
+### `refine_cv(current_cv, user_message)` — iterative chat refinement
+1. Send Gemini: current tailored CV + user's request + master_cv.json
+2. Returns `{"cv": {...}, "reply": "explanation of changes"}`
+3. Updated CV stored in memory, new .docx generated
+4. User can refine repeatedly; each version downloadable
+
+**Rules enforced in all prompts:**
 - Only use skills/experience present in master data
 - Do not add tools, software, or skills not listed
 - Adjust emphasis and ordering, not facts
-- Target 1-page output when possible
 - Keep all dates, titles, and institutions exactly as provided
 
 ---
 
 ## Build Order
 
-- [ ] Step 1: Create `master_cv.json` from extracted data
-- [ ] Step 2: Build `cv_template.py` — ReportLab PDF that matches the format
-- [ ] Step 3: Build `ai_matcher.py` — Claude API call with strict prompt
-- [ ] Step 4: Build `app.py` — Flask routes (paste job text → trigger AI → serve PDF)
-- [ ] Step 5: Build `templates/index.html` — minimal UI
+- [x] Step 1: Create `master_cv.json` from extracted data
+- [x] Step 2: Build `cv_template.py` — python-docx Word output matching CV format
+- [x] Step 3: Build `ai_matcher.py` — Gemini API with strict prompt (tailor + refine)
+- [x] Step 4: Build `app.py` — Flask routes: /generate, /download, /refine
+- [x] Step 5: Build `templates/index.html` — job form + AI chat refinement panel
 - [ ] Step 6: Test end-to-end with a real job description
 - [ ] Step 7 (later): Add URL scraping for job links
 
@@ -192,10 +196,10 @@ Based on the PDFs, the format is:
 
 ## Setup Notes
 
-- API key goes in `.env` file as `ANTHROPIC_API_KEY=sk-ant-...`
+- API key goes in `.env` file as `GEMINI_API_KEY=...`
 - **Never commit `.env` to git**
 - Add `.env` to `.gitignore`
-- Install: `pip install flask anthropic reportlab pdfplumber python-dotenv`
+- Install: `pip install flask python-docx pdfplumber python-dotenv google-genai`
 
 ---
 
