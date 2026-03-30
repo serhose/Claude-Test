@@ -12,18 +12,24 @@
       background: #f4f6f9;
       min-height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 24px;
+      padding: 32px 24px;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .card {
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      padding: 40px 44px;
-      width: 100%;
-      max-width: 680px;
+      padding: 36px 40px;
     }
 
     h1 {
@@ -36,7 +42,7 @@
     .subtitle {
       font-size: 0.9rem;
       color: #666;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     label {
@@ -47,9 +53,9 @@
       margin-bottom: 8px;
     }
 
-    textarea {
+    textarea#jd {
       width: 100%;
-      height: 280px;
+      height: 260px;
       padding: 14px;
       font-size: 0.9rem;
       font-family: inherit;
@@ -61,68 +67,63 @@
       line-height: 1.5;
     }
 
-    textarea:focus {
+    textarea#jd:focus {
       outline: none;
       border-color: #4f46e5;
     }
 
-    textarea::placeholder {
-      color: #aaa;
-    }
+    textarea#jd::placeholder { color: #aaa; }
 
-    button {
-      margin-top: 18px;
+    .btn {
+      margin-top: 16px;
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       background: #4f46e5;
       color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 0.97rem;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s, opacity 0.2s;
     }
 
-    button:hover:not(:disabled) {
-      background: #4338ca;
-    }
+    .btn:hover:not(:disabled) { background: #4338ca; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .btn-outline {
+      background: transparent;
+      color: #4f46e5;
+      border: 1.5px solid #4f46e5;
     }
+    .btn-outline:hover:not(:disabled) { background: #eef2ff; }
 
     .status {
-      margin-top: 16px;
+      margin-top: 14px;
       font-size: 0.88rem;
-      min-height: 22px;
+      min-height: 20px;
       text-align: center;
     }
-
     .status.loading { color: #4f46e5; }
     .status.error   { color: #dc2626; }
     .status.success { color: #16a34a; }
 
     .spinner {
       display: inline-block;
-      width: 14px;
-      height: 14px;
+      width: 13px; height: 13px;
       border: 2px solid #4f46e5;
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       vertical-align: middle;
-      margin-right: 6px;
+      margin-right: 5px;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .note {
-      margin-top: 20px;
-      padding: 12px 14px;
+      margin-top: 18px;
+      padding: 11px 13px;
       background: #f0fdf4;
       border-left: 3px solid #16a34a;
       border-radius: 4px;
@@ -130,41 +131,206 @@
       color: #166534;
       line-height: 1.5;
     }
+
+    /* ── Chat section ───────────────────────────────────────────────────── */
+
+    #chatCard {
+      display: none;
+    }
+
+    #chatCard.visible {
+      display: block;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .chat-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .chat-header .dl-btn {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #4f46e5;
+      background: #eef2ff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .chat-header .dl-btn:hover { background: #e0e7ff; }
+
+    .messages {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px;
+      height: 320px;
+      overflow-y: auto;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 10px 13px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: #4f46e5;
+      color: #fff;
+      border-bottom-right-radius: 2px;
+    }
+
+    .msg.assistant {
+      align-self: flex-start;
+      background: #fff;
+      color: #222;
+      border: 1.5px solid #e5e7eb;
+      border-bottom-left-radius: 2px;
+    }
+
+    .msg.assistant.with-dl {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .msg-dl-btn {
+      align-self: flex-start;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #4f46e5;
+      background: #eef2ff;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .msg-dl-btn:hover { background: #e0e7ff; }
+
+    .chat-input-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    #chatInput {
+      flex: 1;
+      padding: 11px 14px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      resize: none;
+      line-height: 1.4;
+      transition: border-color 0.2s;
+      color: #222;
+    }
+    #chatInput:focus { outline: none; border-color: #4f46e5; }
+    #chatInput::placeholder { color: #aaa; }
+
+    #sendBtn {
+      padding: 11px 20px;
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      white-space: nowrap;
+    }
+    #sendBtn:hover:not(:disabled) { background: #4338ca; }
+    #sendBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .chat-hint {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>CV Tailor</h1>
-    <p class="subtitle">Paste a job description and get a tailored PDF CV in seconds.</p>
+  <div class="wrapper">
 
-    <form id="cvForm">
-      <label for="jd">Job Description</label>
-      <textarea
-        id="jd"
-        name="job_description"
-        placeholder="Paste the full job description here — title, responsibilities, requirements..."
-        required
-      ></textarea>
+    <!-- ── Job Description Form ─────────────────────────────────────────── -->
+    <div class="card" id="mainCard">
+      <h1>CV Tailor</h1>
+      <p class="subtitle">Paste a job description and get a tailored Word CV in seconds.</p>
 
-      <button type="submit" id="submitBtn">Generate Tailored CV</button>
-    </form>
+      <form id="cvForm">
+        <label for="jd">Job Description</label>
+        <textarea
+          id="jd"
+          name="job_description"
+          placeholder="Paste the full job description here — title, responsibilities, requirements..."
+          required
+        ></textarea>
 
-    <div class="status" id="status"></div>
+        <button type="submit" class="btn" id="submitBtn">Generate Tailored CV</button>
+      </form>
 
-    <div class="note">
-      The CV is tailored using only real experience and skills — nothing is fabricated.
-      Only content that matches the job requirements will be included.
+      <div class="status" id="status"></div>
+
+      <div class="note">
+        The CV is tailored using only real experience and skills — nothing is fabricated.
+        Only content that matches the job requirements will be included.
+      </div>
     </div>
+
+    <!-- ── Chat / Refine Section ───────────────────────────────────────── -->
+    <div class="card" id="chatCard">
+      <div class="chat-header">
+        <h2>Refine your CV</h2>
+        <button class="dl-btn" id="dlBtn" onclick="downloadLatest()">Download latest</button>
+      </div>
+
+      <div class="messages" id="messages"></div>
+
+      <div class="chat-input-row">
+        <textarea
+          id="chatInput"
+          rows="2"
+          placeholder="Ask for any changes — e.g. 'make it shorter', 'focus more on data skills', 'remove the volunteer section'..."
+        ></textarea>
+        <button id="sendBtn" onclick="sendRefinement()">Send</button>
+      </div>
+
+      <p class="chat-hint">Each message refines the same CV. Every updated version can be downloaded.</p>
+    </div>
+
   </div>
 
   <script>
-    const form     = document.getElementById("cvForm");
-    const statusEl = document.getElementById("status");
+    const form      = document.getElementById("cvForm");
+    const statusEl  = document.getElementById("status");
     const submitBtn = document.getElementById("submitBtn");
+    const chatCard  = document.getElementById("chatCard");
+    const messagesEl = document.getElementById("messages");
+    const chatInput = document.getElementById("chatInput");
+    const sendBtn   = document.getElementById("sendBtn");
+
+    // ── Generate ────────────────────────────────────────────────────────────
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const jd = document.getElementById("jd").value.trim();
       if (!jd) return;
 
@@ -174,29 +340,24 @@
 
       try {
         const formData = new FormData(form);
-        const response = await fetch("/generate", {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch("/generate", { method: "POST", body: formData });
 
         if (!response.ok) {
           const err = await response.json();
           throw new Error(err.error || "Something went wrong.");
         }
 
-        // Trigger file download
-        const blob = await response.blob();
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement("a");
-        a.href     = url;
-        a.download = "Melda_Akan_CV.pdf";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
+        triggerDownload(await response.blob(), "Melda_Akan_CV.docx");
 
         statusEl.className = "status success";
-        statusEl.textContent = "✓ CV downloaded successfully.";
+        statusEl.textContent = "✓ CV downloaded. Use the chat below to refine it.";
+
+        // Show chat
+        chatCard.classList.add("visible");
+        messagesEl.innerHTML = "";
+        appendMessage("assistant", "Your CV has been generated and downloaded! Ask me to make any changes — I can shorten sections, reorder bullets, focus on specific skills, and more.", true);
+        chatCard.scrollIntoView({ behavior: "smooth", block: "start" });
+
       } catch (err) {
         statusEl.className = "status error";
         statusEl.textContent = "Error: " + err.message;
@@ -204,6 +365,88 @@
         submitBtn.disabled = false;
       }
     });
+
+    // ── Refine ──────────────────────────────────────────────────────────────
+
+    async function sendRefinement() {
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      appendMessage("user", message);
+      chatInput.value = "";
+      sendBtn.disabled = true;
+      chatInput.disabled = true;
+
+      const thinkingEl = appendMessage("assistant", '<span class="spinner"></span> Updating your CV...');
+
+      try {
+        const response = await fetch("/refine", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error || "Something went wrong.");
+
+        thinkingEl.innerHTML = "";
+        thinkingEl.classList.add("with-dl");
+
+        const text = document.createTextNode(data.reply);
+        thinkingEl.appendChild(text);
+
+        const dlBtn = document.createElement("button");
+        dlBtn.className = "msg-dl-btn";
+        dlBtn.textContent = "Download this version";
+        dlBtn.onclick = downloadLatest;
+        thinkingEl.appendChild(dlBtn);
+
+      } catch (err) {
+        thinkingEl.textContent = "Error: " + err.message;
+        thinkingEl.style.color = "#dc2626";
+      } finally {
+        sendBtn.disabled = false;
+        chatInput.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    // Allow Enter to send (Shift+Enter for new line)
+    chatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendRefinement();
+      }
+    });
+
+    // ── Helpers ─────────────────────────────────────────────────────────────
+
+    function appendMessage(role, html, isFirst = false) {
+      const el = document.createElement("div");
+      el.className = `msg ${role}`;
+      el.innerHTML = html;
+      messagesEl.appendChild(el);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return el;
+    }
+
+    function triggerDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function downloadLatest() {
+      const response = await fetch("/download");
+      if (!response.ok) return;
+      triggerDownload(await response.blob(), "Melda_Akan_CV.docx");
+    }
   </script>
 </body>
 </html>

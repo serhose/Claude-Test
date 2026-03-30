@@ -1,5 +1,6 @@
 flask
-anthropic
+python-docx
 reportlab
 pdfplumber
 python-dotenv
+google-genai

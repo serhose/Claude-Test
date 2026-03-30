@@ -36,6 +36,50 @@ STRICT RULES — you must follow these without exception:
 Output format: Return a JSON object with the exact same structure as the master CV (personal, experience, education, volunteer, skills), but containing only the selected/adapted content. Each bullet in experience and volunteer must be an object with "id" and "text" fields."""
 
 
+def refine_cv(current_cv: dict, user_message: str) -> tuple[dict, str]:
+    """
+    Refine an already-tailored CV based on user feedback.
+    Returns (updated_cv_dict, explanation_str).
+    """
+    prompt = f"""{SYSTEM_PROMPT}
+
+The user has already generated a tailored CV and wants to refine it.
+Their request: "{user_message}"
+
+Current tailored CV (refine this):
+{json.dumps(current_cv, indent=2, ensure_ascii=False)}
+
+Master CV (source of truth — only use content from here):
+{json.dumps(MASTER_CV, indent=2, ensure_ascii=False)}
+
+Return a JSON object with TWO keys:
+- "cv": the updated tailored CV (same structure as the master CV)
+- "reply": a short 1-2 sentence explanation of what you changed
+
+Example: {{"cv": {{...}}, "reply": "I removed the Turkish Airlines section and kept only the World Bank and GWU roles to make it more concise."}}"""
+
+    response = CLIENT.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+    )
+
+    raw = response.text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1]
+        if raw.startswith("json"):
+            raw = raw[4:]
+        raw = raw.strip()
+
+    try:
+        result = json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"AI returned invalid JSON: {e}\n\nRaw output:\n{raw}")
+
+    updated_cv = _safety_filter(result.get("cv", result))
+    reply = result.get("reply", "CV updated successfully.")
+    return updated_cv, reply
+
+
 def tailor_cv(job_description: str) -> dict:
     """
     Given a job description string, returns a tailored CV dict
