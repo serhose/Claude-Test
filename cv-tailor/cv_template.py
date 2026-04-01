@@ -32,7 +32,7 @@ def _set_spacing(paragraph, before=0, after=0):
     pPr.append(pSpacing)
 
 
-def _set_right_tab(paragraph, twips=9360):
+def _set_right_tab(paragraph, twips=10800):
     """Set a right-aligned tab stop (default 6.5 inches = 9360 twips)."""
     pPr = paragraph._p.get_or_add_pPr()
     tabs = OxmlElement('w:tabs')

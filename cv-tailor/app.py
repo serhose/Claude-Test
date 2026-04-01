@@ -49,8 +49,12 @@ def generate():
     _state["cv_data"] = tailored_data
     _state["docx_bytes"] = docx_bytes
 
-    selected = tailored_data.get("_selected_resume", "")
-    return jsonify({"ready": True, "selected_resume": selected})
+    return jsonify({
+        "ready": True,
+        "selected_resume": tailored_data.get("_selected_resume", ""),
+        "initial_match_pct": tailored_data.get("_initial_match_pct"),
+        "final_match_pct": tailored_data.get("_final_match_pct"),
+    })
 
 
 @app.route("/download")

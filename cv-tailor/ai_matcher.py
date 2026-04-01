@@ -37,35 +37,42 @@ STRICT RULES:
 9. For skills: only list skills/tools that appear in the source resumes.
 10. Return ONLY valid JSON — no explanation, no markdown fences.
 
-Output JSON structure:
+Output JSON structure — return an object with these top-level keys:
 {
-  "personal": {"name": "", "location": "", "phone": "", "email": "", "linkedin": ""},
-  "experience": [
-    {
-      "company": "", "location": "",
-      "title": "", "start": "", "end": "",
-      "bullets": [{"id": "1", "text": "..."}]
+  "initial_match_pct": 72,
+  "final_match_pct": 91,
+  "cv": {
+    "personal": {"name": "", "location": "", "phone": "", "email": "", "linkedin": ""},
+    "experience": [
+      {
+        "company": "", "location": "",
+        "title": "", "start": "", "end": "",
+        "bullets": [{"id": "1", "text": "..."}]
+      }
+    ],
+    "education": [
+      {
+        "institution": "", "location": "", "degree": "",
+        "start": "", "end": "", "gpa": "",
+        "highlights": [], "coursework": []
+      }
+    ],
+    "volunteer": [
+      {
+        "organization": "", "location": "", "title": "", "start": "", "end": "",
+        "bullets": [{"id": "1", "text": "..."}]
+      }
+    ],
+    "skills": {
+      "technical": [], "data": [], "analysis": [],
+      "finance": [], "business": [], "certifications": [],
+      "languages": [{"language": "", "level": ""}]
     }
-  ],
-  "education": [
-    {
-      "institution": "", "location": "", "degree": "",
-      "start": "", "end": "", "gpa": "",
-      "highlights": [], "coursework": []
-    }
-  ],
-  "volunteer": [
-    {
-      "organization": "", "location": "", "title": "", "start": "", "end": "",
-      "bullets": [{"id": "1", "text": "..."}]
-    }
-  ],
-  "skills": {
-    "technical": [], "data": [], "analysis": [],
-    "finance": [], "business": [], "certifications": [],
-    "languages": [{"language": "", "level": ""}]
   }
 }
+
+- "initial_match_pct": how well the selected resume matched the JD BEFORE tailoring (0-100)
+- "final_match_pct": estimated match quality AFTER your tailoring work (0-100)
 
 Note: for roles with multiple positions at the same company, use this structure instead:
 {
@@ -168,11 +175,15 @@ Generate the tailored CV as a JSON object following the output format rules abov
         raw = raw.strip()
 
     try:
-        tailored = json.loads(raw)
+        result = json.loads(raw)
     except json.JSONDecodeError as e:
         raise ValueError(f"AI returned invalid JSON: {e}\n\nRaw output:\n{raw[:500]}")
 
+    # Support both wrapped {"cv": {...}} and flat format
+    tailored = result.get("cv", result)
     tailored["_selected_resume"] = selected_name
+    tailored["_initial_match_pct"] = result.get("initial_match_pct")
+    tailored["_final_match_pct"] = result.get("final_match_pct")
     return tailored
 
 
