@@ -36,8 +36,10 @@ def generate():
     if len(job_description) < 50:
         return jsonify({"error": "Job description seems too short. Please paste the full text."}), 400
 
+    user_notes = request.form.get("user_notes", "").strip()
+
     try:
-        tailored_data = tailor_cv(job_description)
+        tailored_data = tailor_cv(job_description, user_notes)
         docx_bytes = render_cv(tailored_data)
     except ValueError as e:
         return jsonify({"error": str(e)}), 500
@@ -47,7 +49,8 @@ def generate():
     _state["cv_data"] = tailored_data
     _state["docx_bytes"] = docx_bytes
 
-    return jsonify({"ready": True})
+    selected = tailored_data.get("_selected_resume", "")
+    return jsonify({"ready": True, "selected_resume": selected})
 
 
 @app.route("/download")

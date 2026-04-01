@@ -284,14 +284,24 @@
           required
         ></textarea>
 
+        <label for="notes" style="margin-top:18px;display:block;">Additional notes <span style="font-weight:400;color:#999;">(optional)</span></label>
+        <textarea
+          id="notes"
+          name="user_notes"
+          style="height:90px;"
+          placeholder="Any specific focus, tone, or things to emphasize for this application..."
+        ></textarea>
+
         <button type="submit" class="btn" id="submitBtn">Generate Tailored CV</button>
       </form>
 
       <div class="status" id="status"></div>
 
+      <div class="note" id="resumeNote" style="display:none;"></div>
+
       <div class="note">
-        The CV is tailored using only real experience and skills — nothing is fabricated.
-        Only content that matches the job requirements will be included.
+        The best matching resume is automatically selected from 27 tailored versions.
+        Only real experience and skills are used — nothing is fabricated.
       </div>
     </div>
 
@@ -349,6 +359,12 @@
 
         statusEl.className = "status success";
         statusEl.textContent = "✓ CV downloaded. Use the chat below to refine it.";
+
+        if (data.selected_resume) {
+          const noteEl = document.getElementById("resumeNote");
+          noteEl.textContent = `Selected resume: ${data.selected_resume.replace("Melda_Resume_", "").replace(".docx", "")}`;
+          noteEl.style.display = "block";
+        }
 
         // Show chat
         chatCard.classList.add("visible");
