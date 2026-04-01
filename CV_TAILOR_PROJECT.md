@@ -67,11 +67,11 @@ source-cvs/             # 27 .docx resumes (repo root, one level up from cv-tail
 2. Gemini returns the filename of the best match
 3. Returns `(filename, full_text)` of the selected resume
 
-### `tailor_cv(job_description, user_notes="")` — initial generation
+### `tailor_cv(job_description, user_notes="")` — initial generation (returns match percentages)
 1. Calls `select_best_resume()` first
 2. Sends Gemini: JD + user notes + primary resume (full text) + other 26 resumes (first 600 chars each)
 3. Primary resume is the main source; others are supplementary only
-4. Returns structured JSON dict + `_selected_resume` key
+4. Returns structured JSON dict + `_selected_resume`, `_initial_match_pct`, `_final_match_pct` keys
 
 ### `refine_cv(current_cv, user_message)` — iterative chat refinement
 1. Sends Gemini: user request + current CV JSON + primary resume full text
@@ -95,7 +95,8 @@ source-cvs/             # 27 .docx resumes (repo root, one level up from cv-tail
 - [x] Step 5: Build `app.py` — Flask routes: /generate, /download, /refine
 - [x] Step 6: Build `templates/index.html` — JD form + optional notes + AI chat panel
 - [x] Step 7: Deployed to Render.com — tested and working end-to-end
-- [ ] Step 8 (later): Add URL scraping for job links
+- [x] Step 8: UI redesign + date alignment fix + match percentage display
+- [ ] Step 9 (later): Add URL scraping for job links
 
 ---
 
