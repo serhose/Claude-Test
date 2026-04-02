@@ -65,54 +65,13 @@
     #resultsPanel { display: none; }
     #resultsPanel.visible { display: block; }
     .divider { height: 1px; background: #f0f0f0; margin: 20px 0 18px; }
-    .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .results-header { display: flex; align-items: center; justify-content: space-between; }
     .results-header h2 { font-size: 1rem; font-weight: 700; color: #111; }
     .dl-btn { padding: 8px 16px; background: #4f46e5; color: #fff; border: none; border-radius: 7px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
     .dl-btn:hover { background: #4338ca; }
-    .resume-badge { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; color: #4338ca; border-radius: 20px; padding: 5px 12px; font-size: 0.82rem; font-weight: 600; margin-bottom: 16px; }
-    .resume-badge::before { content: "📄"; font-size: 0.85rem; }
-    .match-row { display: flex; gap: 16px; }
-    .match-box { flex: 1; background: #f8f9fb; border-radius: 10px; padding: 14px 16px; text-align: center; }
-    .match-label { font-size: 0.75rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
-    .match-pct { font-size: 1.8rem; font-weight: 800; }
-    .match-pct.before { color: #f59e0b; }
-    .match-pct.after  { color: #10b981; }
-    .match-bar-wrap { height: 5px; background: #e5e7eb; border-radius: 3px; margin-top: 8px; }
-    .match-bar { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
-    .match-bar.before { background: #f59e0b; }
-    .match-bar.after  { background: #10b981; }
 
     .dl-btn-sm { padding: 6px 12px; background: #eef2ff; color: #4338ca; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
     .dl-btn-sm:hover { background: #e0e7ff; }
-
-    /* ── ATS Check ── */
-    #atsCard { display: none; }
-    #atsCard.visible { display: block; }
-
-    .ats-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-    .ats-header h2 { font-size: 1rem; font-weight: 700; color: #111; }
-    .ats-loading { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #888; }
-
-    .ats-score-row { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
-    .ats-score-circle {
-      width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; font-weight: 800; color: #fff;
-    }
-    .ats-summary { font-size: 0.88rem; color: #444; line-height: 1.5; }
-
-    .ats-suggestions { display: flex; flex-direction: column; gap: 8px; }
-    .suggestion {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 10px 13px; border-radius: 8px; font-size: 0.85rem;
-    }
-    .suggestion.high   { background: #fef2f2; }
-    .suggestion.medium { background: #fffbeb; }
-    .suggestion.low    { background: #f0fdf4; }
-    .suggestion-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-    .suggestion.high   .suggestion-dot { background: #ef4444; }
-    .suggestion.medium .suggestion-dot { background: #f59e0b; }
-    .suggestion.low    .suggestion-dot { background: #10b981; }
 
     /* ── Chat ── */
     #chatCard { display: none; }
@@ -143,7 +102,7 @@
   <div class="card">
     <div class="app-header">
       <h1>CV Tailor</h1>
-      <p>Selects the best matching resume from 27 versions and tailors it to your job description.</p>
+      <p>Synthesizes the best content from all 27 resume versions and tailors it to your job description.</p>
     </div>
 
     <form id="cvForm">
@@ -160,7 +119,7 @@
 
     <div class="loading-row" id="loadingRow">
       <div class="spinner"></div>
-      <span id="loadingMsg">Selecting best resume...</span>
+      <span id="loadingMsg">Scanning all 27 resumes...</span>
     </div>
     <div class="error-msg" id="errorMsg"></div>
 
@@ -171,29 +130,7 @@
         <h2>Your CV is ready</h2>
         <button class="dl-btn" onclick="downloadLatest()">Download .docx</button>
       </div>
-      <div class="resume-badge" id="resumeBadge"></div>
-      <div class="match-row">
-        <div class="match-box">
-          <div class="match-label">Resume match before</div>
-          <div class="match-pct before" id="pctBefore">—</div>
-          <div class="match-bar-wrap"><div class="match-bar before" id="barBefore" style="width:0%"></div></div>
-        </div>
-        <div class="match-box">
-          <div class="match-label">Match after tailoring</div>
-          <div class="match-pct after" id="pctAfter">—</div>
-          <div class="match-bar-wrap"><div class="match-bar after" id="barAfter" style="width:0%"></div></div>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <!-- ── ATS Check Card ── -->
-  <div class="card" id="atsCard">
-    <div class="ats-header">
-      <h2>ATS Compatibility Check</h2>
-      <div class="ats-loading" id="atsLoading"><div class="spinner"></div> Analyzing...</div>
-    </div>
-    <div id="atsContent"></div>
   </div>
 
   <!-- ── Chat Card ── -->
@@ -213,19 +150,23 @@
 </div>
 
 <script>
-  const form        = document.getElementById("cvForm");
-  const submitBtn   = document.getElementById("submitBtn");
-  const loadingRow  = document.getElementById("loadingRow");
-  const loadingMsg  = document.getElementById("loadingMsg");
-  const errorMsg    = document.getElementById("errorMsg");
+  const form         = document.getElementById("cvForm");
+  const submitBtn    = document.getElementById("submitBtn");
+  const loadingRow   = document.getElementById("loadingRow");
+  const loadingMsg   = document.getElementById("loadingMsg");
+  const errorMsg     = document.getElementById("errorMsg");
   const resultsPanel = document.getElementById("resultsPanel");
-  const atsCard     = document.getElementById("atsCard");
-  const chatCard    = document.getElementById("chatCard");
-  const messagesEl  = document.getElementById("messages");
-  const chatInput   = document.getElementById("chatInput");
-  const sendBtn     = document.getElementById("sendBtn");
+  const chatCard     = document.getElementById("chatCard");
+  const messagesEl   = document.getElementById("messages");
+  const chatInput    = document.getElementById("chatInput");
+  const sendBtn      = document.getElementById("sendBtn");
 
-  const loadingSteps = ["Selecting best resume...", "Analyzing job requirements...", "Tailoring content...", "Almost done..."];
+  const loadingSteps = [
+    "Scanning all 27 resumes...",
+    "Analyzing job requirements...",
+    "Synthesizing best content...",
+    "Almost done..."
+  ];
   let loadingTimer = null;
 
   function startLoadingAnimation() {
@@ -245,7 +186,6 @@
     submitBtn.disabled = true;
     errorMsg.classList.remove("visible");
     resultsPanel.classList.remove("visible");
-    atsCard.classList.remove("visible");
     chatCard.classList.remove("visible");
     loadingRow.classList.add("visible");
     startLoadingAnimation();
@@ -257,12 +197,8 @@
       if (!response.ok) throw new Error(data.error || "Something went wrong.");
 
       await downloadLatest();
-      showResults(data);
+      resultsPanel.classList.add("visible");
 
-      // Load ATS in background (non-blocking)
-      loadATS();
-
-      // Show chat
       chatCard.classList.add("visible");
       messagesEl.innerHTML = "";
       appendMessage("assistant", "Your CV is ready! Use the chat to refine it further — I can shorten sections, shift focus, or adjust the tone.");
@@ -277,54 +213,6 @@
       stopLoadingAnimation();
     }
   });
-
-  function showResults(data) {
-    resultsPanel.classList.add("visible");
-    const name = (data.selected_resume || "").replace("Melda_Resume_", "").replace(".docx", "").replace(/_/g, " ");
-    document.getElementById("resumeBadge").textContent = name || "Unknown";
-    const before = data.initial_match_pct, after = data.final_match_pct;
-    if (before != null) {
-      document.getElementById("pctBefore").textContent = before + "%";
-      setTimeout(() => { document.getElementById("barBefore").style.width = before + "%"; }, 100);
-    }
-    if (after != null) {
-      document.getElementById("pctAfter").textContent = after + "%";
-      setTimeout(() => { document.getElementById("barAfter").style.width = after + "%"; }, 100);
-    }
-  }
-
-  // ── ATS Check ─────────────────────────────────────────────────────────
-
-  async function loadATS() {
-    atsCard.classList.add("visible");
-    document.getElementById("atsLoading").style.display = "flex";
-    document.getElementById("atsContent").innerHTML = "";
-    try {
-      const r = await fetch("/ats-check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error);
-      renderATS(data);
-    } catch (e) {
-      document.getElementById("atsContent").innerHTML = `<div style="color:#aaa;font-size:0.85rem;">ATS check unavailable: ${e.message}</div>`;
-    } finally {
-      document.getElementById("atsLoading").style.display = "none";
-    }
-  }
-
-  function renderATS(data) {
-    const score = data.score || 0;
-    const color = score >= 75 ? "#10b981" : score >= 50 ? "#f59e0b" : "#ef4444";
-    let html = `<div class="ats-score-row">
-      <div class="ats-score-circle" style="background:${color}">${score}</div>
-      <div class="ats-summary">${data.summary || ""}</div>
-    </div>`;
-    if (data.suggestions?.length) {
-      html += `<div class="ats-suggestions">` + data.suggestions.map(s =>
-        `<div class="suggestion ${s.priority}"><div class="suggestion-dot"></div><span>${s.text}</span></div>`
-      ).join("") + `</div>`;
-    }
-    document.getElementById("atsContent").innerHTML = html;
-  }
 
   // ── Refine ────────────────────────────────────────────────────────────
 

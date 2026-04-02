@@ -2,16 +2,15 @@
 Flask app — CV Tailor
 Routes:
   GET  /           → UI
-  POST /generate   → AI tailoring, stores CV, returns metadata JSON
+  POST /generate   → AI tailoring using all 27 resumes, returns JSON
   GET  /download   → serve latest CV as .docx
-  GET  /preview    → return latest CV data as JSON for browser rendering
-  POST /ats-check  → run ATS analysis on latest CV vs stored JD
+  GET  /preview    → return latest CV data as JSON
   POST /refine     → refine stored CV via chat
 """
 
 import io
 from flask import Flask, request, render_template, send_file, jsonify
-from ai_matcher import tailor_cv, refine_cv, check_ats
+from ai_matcher import tailor_cv, refine_cv
 from cv_template import render_cv
 
 app = Flask(__name__)
@@ -21,7 +20,6 @@ app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2 MB max request
 _state = {
     "cv_data": None,
     "docx_bytes": None,
-    "job_description": None,
 }
 
 
@@ -50,14 +48,8 @@ def generate():
 
     _state["cv_data"] = tailored_data
     _state["docx_bytes"] = docx_bytes
-    _state["job_description"] = job_description
 
-    return jsonify({
-        "ready": True,
-        "selected_resume": tailored_data.get("_selected_resume", ""),
-        "initial_match_pct": tailored_data.get("_initial_match_pct"),
-        "final_match_pct": tailored_data.get("_final_match_pct"),
-    })
+    return jsonify({"ready": True})
 
 
 @app.route("/download")
@@ -76,21 +68,7 @@ def download():
 def preview():
     if not _state["cv_data"]:
         return jsonify({"error": "No CV generated yet."}), 404
-    clean = {k: v for k, v in _state["cv_data"].items() if not k.startswith("_")}
-    return jsonify(clean)
-
-
-@app.route("/ats-check", methods=["POST"])
-def ats_check():
-    if not _state["cv_data"] or not _state["job_description"]:
-        return jsonify({"error": "Generate a CV first."}), 400
-    try:
-        result = check_ats(_state["cv_data"], _state["job_description"])
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 500
-    except Exception as e:
-        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
-    return jsonify(result)
+    return jsonify(_state["cv_data"])
 
 
 @app.route("/refine", methods=["POST"])
