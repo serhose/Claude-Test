@@ -213,6 +213,56 @@ Return the result as a JSON object following the output format above."""
     return tailored
 
 
+def check_ats(cv_data: dict, job_description: str) -> dict:
+    """
+    Run an ATS compatibility check on the generated CV against the job description.
+    Returns {score, summary, suggestions}.
+    """
+    clean_cv = {k: v for k, v in cv_data.items() if not k.startswith("_")}
+
+    prompt = f"""You are an ATS (Applicant Tracking System) expert analyst. Evaluate this CV against the job description for ATS compatibility.
+
+CV:
+{json.dumps(clean_cv, indent=2, ensure_ascii=False)}
+
+Job Description:
+{job_description}
+
+Return a JSON object with this exact structure:
+{{
+  "score": 82,
+  "summary": "One sentence overview of ATS readiness",
+  "suggestions": [
+    {{"priority": "high", "text": "Specific actionable suggestion"}},
+    {{"priority": "medium", "text": "Specific actionable suggestion"}},
+    {{"priority": "low", "text": "Specific actionable suggestion"}}
+  ]
+}}
+
+Rules:
+- score: 0-100 based on keyword alignment, section completeness, and formatting
+- 3-5 specific, actionable suggestions referencing real gaps
+- Do NOT suggest adding skills or experience not present in the CV
+- priority high = missing critical keywords; medium = ordering/emphasis; low = nice-to-have
+- Return ONLY valid JSON"""
+
+    response = CLIENT.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+    )
+    raw = response.text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1]
+        if raw.startswith("json"):
+            raw = raw[4:]
+        raw = raw.strip()
+
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"ATS check returned invalid JSON: {e}")
+
+
 def refine_cv(current_cv: dict, user_message: str) -> tuple[dict, str]:
     """
     Refine an already-tailored CV based on user feedback.

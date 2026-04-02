@@ -1,24 +1,27 @@
 """
 Flask app — CV Tailor
 Routes:
-  GET  /          → paste job description UI
-  POST /generate  → AI tailoring, stores CV, returns .docx download
-  GET  /download  → serve latest CV as .docx
-  POST /refine    → refine stored CV via chat, returns JSON {reply, ready}
+  GET  /           → UI
+  POST /generate   → AI tailoring, stores CV, returns metadata JSON
+  GET  /download   → serve latest CV as .docx
+  GET  /preview    → return latest CV data as JSON for browser rendering
+  POST /ats-check  → run ATS analysis on latest CV vs stored JD
+  POST /refine     → refine stored CV via chat
 """
 
 import io
 from flask import Flask, request, render_template, send_file, jsonify
-from ai_matcher import tailor_cv, refine_cv
+from ai_matcher import tailor_cv, refine_cv, check_ats
 from cv_template import render_cv
 
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024  # 1 MB max request
+app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2 MB max request
 
 # Single-user in-memory state
 _state = {
-    "cv_data": None,      # latest tailored CV dict
-    "docx_bytes": None,   # latest rendered .docx bytes
+    "cv_data": None,
+    "docx_bytes": None,
+    "job_description": None,
 }
 
 
@@ -30,7 +33,6 @@ def index():
 @app.route("/generate", methods=["POST"])
 def generate():
     job_description = request.form.get("job_description", "").strip()
-
     if not job_description:
         return jsonify({"error": "Job description cannot be empty."}), 400
     if len(job_description) < 50:
@@ -48,6 +50,7 @@ def generate():
 
     _state["cv_data"] = tailored_data
     _state["docx_bytes"] = docx_bytes
+    _state["job_description"] = job_description
 
     return jsonify({
         "ready": True,
@@ -61,13 +64,33 @@ def generate():
 def download():
     if not _state["docx_bytes"]:
         return jsonify({"error": "No CV generated yet."}), 404
-
     return send_file(
         io.BytesIO(_state["docx_bytes"]),
         mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         as_attachment=True,
         download_name="Melda_Akan_CV.docx",
     )
+
+
+@app.route("/preview")
+def preview():
+    if not _state["cv_data"]:
+        return jsonify({"error": "No CV generated yet."}), 404
+    clean = {k: v for k, v in _state["cv_data"].items() if not k.startswith("_")}
+    return jsonify(clean)
+
+
+@app.route("/ats-check", methods=["POST"])
+def ats_check():
+    if not _state["cv_data"] or not _state["job_description"]:
+        return jsonify({"error": "Generate a CV first."}), 400
+    try:
+        result = check_ats(_state["cv_data"], _state["job_description"])
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+    return jsonify(result)
 
 
 @app.route("/refine", methods=["POST"])
@@ -77,7 +100,6 @@ def refine():
 
     data = request.get_json()
     user_message = (data or {}).get("message", "").strip()
-
     if not user_message:
         return jsonify({"error": "Message cannot be empty."}), 400
 
