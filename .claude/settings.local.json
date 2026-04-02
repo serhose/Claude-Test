@@ -30,7 +30,17 @@
       "Bash(tasklist /FI \"PID eq 10920\")",
       "Bash(powershell -Command \"Get-Process -Id 6628, 10920 | Select-Object Id, ProcessName, MainWindowTitle\")",
       "Bash(powershell -Command \"Get-WmiObject Win32_Process -Filter 'ProcessId=6628 OR ProcessId=10920' | Select-Object ProcessId, CommandLine\")",
-      "Bash(powershell -Command \"Stop-Process -Id 6628, 10920 -Force\")"
+      "Bash(powershell -Command \"Stop-Process -Id 6628, 10920 -Force\")",
+      "Bash(curl -s -X POST http://127.0.0.1:5000/generate -F \"job_description=Test job description that is long enough to pass validation with more than fifty characters here\" -F \"user_notes=\" -o -)",
+      "Bash(netstat -ano)",
+      "Bash(Format-List)",
+      "Bash(powershell -Command \"Get-WmiObject Win32_Process -Filter 'ProcessId=21308 OR ProcessId=10920' | Select-Object ProcessId, CommandLine | Format-Table -AutoSize\")",
+      "Bash(powershell -Command \"Get-WmiObject Win32_Process -Filter 'ProcessId=21308' | Select-Object ProcessId, CommandLine, ExecutablePath, @{Name='WorkingDir';Expression={\\(\\\\$_.GetOwner\\(\\).Domain + '\\\\\\\\' + \\\\$_.GetOwner\\(\\).User\\)}}\")",
+      "Bash(powershell -Command \"Stop-Process -Id 21308 -Force\")",
+      "Bash(powershell -Command \"Get-Process -Name python -ErrorAction SilentlyContinue | Select-Object Id, ProcessName\")",
+      "Bash(powershell -Command \"Get-WmiObject Win32_Process -Filter 'ProcessId=17456' | Select-Object ProcessId, CommandLine\")",
+      "Bash(powershell -Command \"Stop-Process -Id 17456 -Force\")",
+      "Bash(curl -s -X POST http://127.0.0.1:5000/generate -F \"job_description=Test job description that is long enough to pass the fifty character validation minimum\" -F \"user_notes=\")"
     ]
   },
   "hooks": {
