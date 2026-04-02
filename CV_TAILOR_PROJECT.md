@@ -79,10 +79,12 @@ source-cvs/             # 27 .docx resumes (repo root, one level up from cv-tail
 3. Updated CV stored in memory, new .docx generated; repeatable
 
 **Rules enforced in all prompts:**
-- Only use content present in the source resumes
-- Cannot invent skills, tools, titles, or experience
-- May reorder/rephrase bullets but facts/numbers must stay identical
-- Keep all dates, titles, and institutions exactly as in the source
+- Candidate voice comes first — JD is used only as a relevance filter, never as a writing template
+- Two-pass approach: Pass 1 extracts candidate profile/voice; Pass 2 writes the CV
+- NEVER copy phrases or grammar structures from the JD
+- Only use content present in the source resumes — no fabrication
+- Preserve measurable results exactly (numbers, percentages, scale)
+- Varied, human-like language with strong action verbs — no keyword stuffing
 
 ---
 
