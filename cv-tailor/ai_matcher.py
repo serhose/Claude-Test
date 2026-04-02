@@ -23,19 +23,37 @@ load_dotenv(pathlib.Path(__file__).parent.parent / ".env")
 
 CLIENT = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-GENERATION_SYSTEM_PROMPT = """You are a professional CV tailoring assistant. Your job is to create a tailored CV for a specific job description using content from Melda Akan's source resumes.
+GENERATION_SYSTEM_PROMPT = """You are an expert Executive Career Strategist and Senior Technical Recruiter with 20 years of experience in high-stakes hiring. Your task is to synthesize a bespoke CV that is hyper-tailored to a specific Job Description while remaining 100% authentic to the candidate's actual history.
 
-STRICT RULES:
-1. ONLY use information present in the provided source resumes. Do not add, invent, or imply any skills, tools, experience, or qualifications not explicitly listed.
-2. The PRIMARY resume is your main source — use its structure, bullets, and emphasis as the foundation.
-3. You MAY supplement with content from OTHER resumes if it's clearly relevant and not already in the primary.
-4. You MAY reorder bullets to lead with the most relevant ones.
-5. You MAY lightly rephrase a bullet to emphasize the most relevant aspect — facts, numbers, and scope must remain identical.
-6. You MAY omit bullets or roles that are entirely irrelevant to the job.
-7. Always include all education entries.
-8. Always include the volunteer section if present.
-9. For skills: only list skills/tools that appear in the source resumes.
-10. Return ONLY valid JSON — no explanation, no markdown fences.
+=== TWO-PASS APPROACH ===
+PASS 1 — BUILD THE CANDIDATE PROFILE (do this internally before writing anything):
+  - Read the PRIMARY resume carefully
+  - Extract: the candidate's authentic voice, signature achievements, measurable results, and strongest skills
+  - Note which experiences from SUPPLEMENTARY resumes add unique value
+  - Identify the candidate's natural writing style and tone
+
+PASS 2 — WRITE THE CV (using only what you extracted in Pass 1):
+  - Use the candidate's OWN words and phrasing as the foundation
+  - Use the Job Description ONLY as a relevance filter — to decide what to include or emphasize
+  - Never use the JD as a writing template
+
+=== LANGUAGE RULES — STRICTLY ENFORCED ===
+1. NEVER copy phrases, sentences, or grammar structures from the Job Description
+2. NEVER mirror the JD's vocabulary — rephrase everything in the candidate's authentic voice
+3. Use varied, human-like language — avoid keyword stuffing and robotic phrasing
+4. Write concise, impactful bullet points starting with strong action verbs
+5. Preserve all measurable results exactly (numbers, percentages, scale)
+6. Keep all company names, titles, and dates exactly as in the source resumes
+
+=== CONTENT RULES ===
+7. ONLY use information present in the provided source resumes — never invent or imply anything
+8. PRIMARY resume is the foundation — use its structure, timeline, and core achievements
+9. SUPPLEMENTARY resumes are an "Achievement Database" — pull from them only when clearly relevant
+10. You MAY reorder bullets to lead with the most relevant ones
+11. You MAY omit bullets or roles that are entirely irrelevant
+12. Always include all education entries and the volunteer section
+13. For skills: only list skills/tools explicitly in the source resumes
+14. Return ONLY valid JSON — no explanation, no markdown fences
 
 Output JSON structure — return an object with these top-level keys:
 {
@@ -145,22 +163,30 @@ def tailor_cv(job_description: str, user_notes: str = "") -> dict:
 
     prompt = f"""{GENERATION_SYSTEM_PROMPT}
 
+=== SOURCE MATERIAL (candidate's authentic history — your primary source) ===
+
+PRIMARY RESUME — Core structure, voice, and achievements:
+---
+{primary_text}
+---
+
+SUPPLEMENTARY ACHIEVEMENT DATABASE — pull from here only what adds unique relevance:
+---
+{supplementary}
+---
+
+=== RELEVANCE FILTER (use ONLY to decide what to include — do NOT copy its language) ===
+
 Job Description:
 ---
 {job_description}
 ---
 {notes_section}
-PRIMARY RESUME (main source — use this as the foundation):
----
-{primary_text}
----
-
-SUPPLEMENTARY RESUMES (use only if clearly relevant content is missing from the primary):
----
-{supplementary}
----
-
-Generate the tailored CV as a JSON object following the output format rules above."""
+=== YOUR TASK ===
+Execute the two-pass approach described above.
+Write every bullet in the candidate's own voice.
+Do not mirror the JD's phrasing.
+Return the result as a JSON object following the output format above."""
 
     response = CLIENT.models.generate_content(
         model="gemini-2.5-flash",
@@ -196,9 +222,13 @@ def refine_cv(current_cv: dict, user_message: str) -> tuple[dict, str]:
     selected_name = current_cv.get("_selected_resume", list(RESUMES.keys())[0])
     primary_text = RESUMES.get(selected_name, "")
 
-    prompt = f"""You are a professional CV tailoring assistant refining an existing tailored CV.
+    prompt = f"""You are an expert Executive Career Strategist refining an existing tailored CV.
 
-STRICT RULES: Same as before — only use content from the source resumes. Do not fabricate.
+STRICT RULES:
+- Only use content from the source resume — do not fabricate anything
+- Write in the candidate's authentic voice — do NOT copy phrasing from any job description
+- Use varied, human-like language with strong action verbs
+- Preserve all measurable results exactly
 
 User's refinement request: "{user_message}"
 
