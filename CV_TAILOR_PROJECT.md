@@ -17,7 +17,7 @@ User pastes a job description + optional notes → AI picks the best matching re
 ## Project Structure
 ```
 cv-tailor/
-├── app.py              # Flask server — routes: /generate, /refine, /download
+├── app.py              # Flask server — routes: /generate, /download, /preview, /ats-check, /refine
 ├── resume_loader.py    # Loads all 27 source .docx resumes at startup
 ├── ai_matcher.py       # Gemini API — select_best_resume(), tailor_cv(), refine_cv()
 ├── cv_template.py      # python-docx Word generation
@@ -98,7 +98,8 @@ source-cvs/             # 27 .docx resumes (repo root, one level up from cv-tail
 - [x] Step 6: Build `templates/index.html` — JD form + optional notes + AI chat panel
 - [x] Step 7: Deployed to Render.com — tested and working end-to-end
 - [x] Step 8: UI redesign + date alignment fix + match percentage display
-- [ ] Step 9 (later): Add URL scraping for job links
+- [x] Step 9: CV browser preview + ATS compatibility check
+- [ ] Step 10 (later): Add URL scraping for job links
 
 ---
 
