@@ -25,7 +25,12 @@
       "Bash(powershell -Command \"Invoke-WebRequest -Uri 'https://github.com/railwayapp/cli/releases/latest' -MaximumRedirection 5 | Select-Object -ExpandProperty BaseResponse | Select-Object -ExpandProperty ResponseUri\" 2>&1)",
       "Bash(powershell -Command \"Invoke-WebRequest -Uri 'https://github.com/railwayapp/cli/releases/download/v4.35.0/railway-v4.35.0-x86_64-pc-windows-msvc.zip' -OutFile 'C:/railway.zip'\" 2>&1)",
       "Bash(powershell -Command \"Invoke-WebRequest -Uri 'https://github.com/railwayapp/cli/releases/download/v4.35.0/railway-v4.35.0-x86_64-pc-windows-msvc.zip' -OutFile \\\\\"$env:TEMP/railway.zip\\\\\"\" 2>&1)",
-      "Bash(powershell -Command \"& {$url='https://github.com/railwayapp/cli/releases/download/v4.35.0/railway-v4.35.0-x86_64-pc-windows-msvc.zip'; $out='C:/Users/akanr/AppData/Local/Temp/railway.zip'; \\(New-Object Net.WebClient\\).DownloadFile\\($url, $out\\); Write-Host 'Done'}\" 2>&1)"
+      "Bash(powershell -Command \"& {$url='https://github.com/railwayapp/cli/releases/download/v4.35.0/railway-v4.35.0-x86_64-pc-windows-msvc.zip'; $out='C:/Users/akanr/AppData/Local/Temp/railway.zip'; \\(New-Object Net.WebClient\\).DownloadFile\\($url, $out\\); Write-Host 'Done'}\" 2>&1)",
+      "Bash(tasklist /FI \"PID eq 6628\")",
+      "Bash(tasklist /FI \"PID eq 10920\")",
+      "Bash(powershell -Command \"Get-Process -Id 6628, 10920 | Select-Object Id, ProcessName, MainWindowTitle\")",
+      "Bash(powershell -Command \"Get-WmiObject Win32_Process -Filter 'ProcessId=6628 OR ProcessId=10920' | Select-Object ProcessId, CommandLine\")",
+      "Bash(powershell -Command \"Stop-Process -Id 6628, 10920 -Force\")"
     ]
   },
   "hooks": {
