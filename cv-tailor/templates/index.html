@@ -82,39 +82,8 @@
     .match-bar.before { background: #f59e0b; }
     .match-bar.after  { background: #10b981; }
 
-    /* ── CV Preview ── */
-    #previewCard { display: none; }
-    #previewCard.visible { display: block; }
-
-    .preview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .preview-header h2 { font-size: 1rem; font-weight: 700; color: #111; }
     .dl-btn-sm { padding: 6px 12px; background: #eef2ff; color: #4338ca; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
     .dl-btn-sm:hover { background: #e0e7ff; }
-
-    .cv-preview {
-      border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 28px 32px;
-      background: #fff; font-family: Calibri, "Segoe UI", sans-serif;
-      font-size: 0.88rem; line-height: 1.5; color: #111;
-      max-height: 600px; overflow-y: auto;
-    }
-    .cv-name { text-align: center; font-size: 1.3rem; font-weight: 700; margin-bottom: 3px; }
-    .cv-contact { text-align: center; font-size: 0.78rem; color: #555; margin-bottom: 12px; }
-    .cv-section { margin-top: 14px; }
-    .cv-section-title {
-      font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-      border-bottom: 1.5px solid #111; padding-bottom: 3px; margin-bottom: 8px;
-    }
-    .cv-entry { margin-bottom: 10px; }
-    .cv-entry-header { display: flex; justify-content: space-between; align-items: baseline; }
-    .cv-entry-left { font-weight: 700; font-size: 0.88rem; }
-    .cv-entry-right { font-size: 0.78rem; color: #555; white-space: nowrap; margin-left: 8px; }
-    .cv-entry-subtitle { display: flex; justify-content: space-between; }
-    .cv-entry-title { font-weight: 600; font-size: 0.85rem; }
-    .cv-entry-date { font-size: 0.78rem; color: #555; }
-    .cv-bullets { margin: 4px 0 0 0; padding-left: 16px; }
-    .cv-bullets li { margin-bottom: 2px; font-size: 0.83rem; }
-    .cv-skill-row { font-size: 0.83rem; margin-bottom: 3px; }
-    .cv-skill-row strong { font-weight: 600; }
 
     /* ── ATS Check ── */
     #atsCard { display: none; }
@@ -218,15 +187,6 @@
     </div>
   </div>
 
-  <!-- ── CV Preview Card ── -->
-  <div class="card" id="previewCard">
-    <div class="preview-header">
-      <h2>CV Preview</h2>
-      <button class="dl-btn-sm" onclick="downloadLatest()">Download .docx</button>
-    </div>
-    <div class="cv-preview" id="cvPreview"></div>
-  </div>
-
   <!-- ── ATS Check Card ── -->
   <div class="card" id="atsCard">
     <div class="ats-header">
@@ -259,7 +219,6 @@
   const loadingMsg  = document.getElementById("loadingMsg");
   const errorMsg    = document.getElementById("errorMsg");
   const resultsPanel = document.getElementById("resultsPanel");
-  const previewCard = document.getElementById("previewCard");
   const atsCard     = document.getElementById("atsCard");
   const chatCard    = document.getElementById("chatCard");
   const messagesEl  = document.getElementById("messages");
@@ -286,7 +245,6 @@
     submitBtn.disabled = true;
     errorMsg.classList.remove("visible");
     resultsPanel.classList.remove("visible");
-    previewCard.classList.remove("visible");
     atsCard.classList.remove("visible");
     chatCard.classList.remove("visible");
     loadingRow.classList.add("visible");
@@ -301,8 +259,7 @@
       await downloadLatest();
       showResults(data);
 
-      // Load preview and ATS in parallel (non-blocking)
-      loadPreview();
+      // Load ATS in background (non-blocking)
       loadATS();
 
       // Show chat
@@ -334,103 +291,6 @@
       document.getElementById("pctAfter").textContent = after + "%";
       setTimeout(() => { document.getElementById("barAfter").style.width = after + "%"; }, 100);
     }
-  }
-
-  // ── CV Preview ────────────────────────────────────────────────────────
-
-  async function loadPreview() {
-    previewCard.classList.add("visible");
-    document.getElementById("cvPreview").innerHTML = '<div style="color:#aaa;font-size:0.85rem;">Loading preview...</div>';
-    try {
-      const r = await fetch("/preview");
-      if (!r.ok) return;
-      const cv = await r.json();
-      document.getElementById("cvPreview").innerHTML = renderCVHTML(cv);
-    } catch {}
-  }
-
-  function renderCVHTML(cv) {
-    const p = cv.personal || {};
-    let html = "";
-
-    html += `<div class="cv-name">${p.name || ""}</div>`;
-    const contact = [p.location, p.phone, p.email, p.linkedin].filter(Boolean).join("  |  ");
-    html += `<div class="cv-contact">${contact}</div>`;
-
-    if (cv.summary) {
-      html += `<div style="font-size:0.83rem;font-style:italic;color:#333;line-height:1.6;margin:10px 0 4px;">${cv.summary}</div>`;
-    }
-
-    // Experience
-    if (cv.experience?.length) {
-      html += section("EXPERIENCE", cv.experience.map(exp => {
-        let s = "";
-        if (exp.roles) {
-          s += entryHeader(exp.company, exp.location);
-          exp.roles.forEach(r => { s += entrySubtitle(r.title, `${r.start} – ${r.end}`); });
-        } else {
-          s += entryHeader(exp.company, exp.location);
-          s += entrySubtitle(exp.title, `${exp.start} – ${exp.end}`);
-        }
-        s += bullets(exp.bullets || []);
-        return s;
-      }).join(""));
-    }
-
-    // Education
-    if (cv.education?.length) {
-      html += section("EDUCATION", cv.education.map(edu => {
-        const gpa = edu.gpa ? ` (${edu.gpa} GPA)` : "";
-        let s = entryHeader(edu.institution + gpa, edu.location);
-        s += entrySubtitle(edu.degree, `${edu.start} – ${edu.end}`);
-        (edu.highlights || []).forEach(h => { s += `<ul class="cv-bullets"><li>${h}</li></ul>`; });
-        if (edu.coursework?.length) s += `<ul class="cv-bullets"><li>Relevant Coursework: ${edu.coursework.join(", ")}</li></ul>`;
-        return s;
-      }).join(""));
-    }
-
-    // Volunteer
-    if (cv.volunteer?.length) {
-      html += section("VOLUNTEER WORK", cv.volunteer.map(vol => {
-        let s = entryHeader(vol.organization, vol.location);
-        s += entrySubtitle(vol.title, `${vol.start} – ${vol.end}`);
-        s += bullets(vol.bullets || []);
-        return s;
-      }).join(""));
-    }
-
-    // Skills
-    if (cv.skills) {
-      const sk = cv.skills;
-      let rows = "";
-      if (sk.technical?.length)     rows += skillRow("Technical", sk.technical.join(", "));
-      if (sk.data?.length)          rows += skillRow("Data", sk.data.join("; "));
-      if (sk.analysis?.length)      rows += skillRow("Analysis", sk.analysis.join(", "));
-      if (sk.finance?.length)       rows += skillRow("Finance", sk.finance.join(", "));
-      if (sk.certifications?.length) rows += skillRow("Certifications", sk.certifications.join(", "));
-      if (sk.languages?.length)     rows += skillRow("Languages", sk.languages.map(l => `${l.language} (${l.level})`).join(", "));
-      if (rows) html += section("SKILLS / ACTIVITIES", rows);
-    }
-
-    return html;
-  }
-
-  function section(title, content) {
-    return `<div class="cv-section"><div class="cv-section-title">${title}</div>${content}</div>`;
-  }
-  function entryHeader(left, right) {
-    return `<div class="cv-entry"><div class="cv-entry-header"><span class="cv-entry-left">${left || ""}</span><span class="cv-entry-right">${right || ""}</span></div>`;
-  }
-  function entrySubtitle(title, date) {
-    return `<div class="cv-entry-subtitle"><span class="cv-entry-title">${title || ""}</span><span class="cv-entry-date">${date || ""}</span></div>`;
-  }
-  function bullets(list) {
-    if (!list.length) return "</div>";
-    const items = list.map(b => `<li>${typeof b === "object" ? b.text : b}</li>`).join("");
-    return `<ul class="cv-bullets">${items}</ul></div>`;
-  }
-  function skillRow(label, value) {
-    return `<div class="cv-skill-row"><strong>${label}:</strong> ${value}</div>`;
   }
 
   // ── ATS Check ─────────────────────────────────────────────────────────
@@ -492,9 +352,6 @@
       dlBtn.textContent = "Download this version";
       dlBtn.onclick = downloadLatest;
       thinkingEl.appendChild(dlBtn);
-
-      // Refresh preview silently
-      loadPreview();
 
     } catch (err) {
       thinkingEl.textContent = "Error: " + err.message;
