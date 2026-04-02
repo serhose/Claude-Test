@@ -98,8 +98,9 @@ source-cvs/             # 27 .docx resumes (repo root, one level up from cv-tail
 - [x] Step 6: Build `templates/index.html` — JD form + optional notes + AI chat panel
 - [x] Step 7: Deployed to Render.com — tested and working end-to-end
 - [x] Step 8: UI redesign + date alignment fix + match percentage display
-- [x] Step 9: CV browser preview + ATS compatibility check
-- [ ] Step 10 (later): Add URL scraping for job links
+- [x] Step 9: ATS compatibility check + CV browser preview (preview later removed)
+- [x] Step 10: Professional summary section + intelligent bullet enrichment
+- [ ] Step 11 (later): Add URL scraping for job links
 
 ---
 
