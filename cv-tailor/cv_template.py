@@ -88,6 +88,16 @@ def render_cv(cv_data: dict) -> bytes:
     r.font.size = Pt(10)
     r.font.name = 'Calibri'
 
+    # ── Summary ───────────────────────────────────────────────────────────────
+
+    if cv_data.get("summary"):
+        p = doc.add_paragraph()
+        _set_spacing(p, before=0, after=60)
+        r = p.add_run(cv_data["summary"])
+        r.font.size = Pt(10)
+        r.font.name = 'Calibri'
+        r.font.italic = True
+
     # ── Helpers ───────────────────────────────────────────────────────────────
 
     def section_header(title):
