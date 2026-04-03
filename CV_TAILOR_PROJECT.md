@@ -93,14 +93,16 @@ source-cvs/             # 27 .docx resumes (repo root, one level up from cv-tail
 - [x] Step 1: Create source CV pool (27 .docx files in source-cvs/)
 - [x] Step 2: Build `cv_template.py` — python-docx Word output matching CV format
 - [x] Step 3: Build `resume_loader.py` — loads all 27 resumes at startup
-- [x] Step 4: Build `ai_matcher.py` — resume selection + tailoring + refinement
+- [x] Step 4: Build `ai_matcher.py` — tailoring + refinement
 - [x] Step 5: Build `app.py` — Flask routes: /generate, /download, /refine
 - [x] Step 6: Build `templates/index.html` — JD form + optional notes + AI chat panel
 - [x] Step 7: Deployed to Render.com — tested and working end-to-end
-- [x] Step 8: UI redesign + date alignment fix + match percentage display
-- [x] Step 9: ATS compatibility check + CV browser preview (preview later removed)
+- [x] Step 8: UI redesign + date alignment fix
+- [x] Step 9: ATS compatibility check + CV browser preview (both later removed/integrated)
 - [x] Step 10: Professional summary section + intelligent bullet enrichment
-- [ ] Step 11 (later): Add URL scraping for job links
+- [x] Step 11: Overhauled to use all 27 resumes as equal sources (no single resume selection)
+- [x] Step 12: Positioning Report — shows JD requirements found vs. gaps with honest bridge explanations
+- [ ] Step 13 (later): Add URL scraping for job links
 
 ---
 
