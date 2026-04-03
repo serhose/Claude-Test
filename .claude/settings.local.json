@@ -43,7 +43,8 @@
       "Bash(curl -s -X POST http://127.0.0.1:5000/generate -F \"job_description=Test job description that is long enough to pass the fifty character validation minimum\" -F \"user_notes=\")",
       "Bash(pip3 --version)",
       "Bash(pip3 install:*)",
-      "Bash(powershell -Command \"Stop-Process -Id 14704 -Force\")"
+      "Bash(powershell -Command \"Stop-Process -Id 14704 -Force\")",
+      "Bash(pip --version)"
     ]
   },
   "hooks": {
