@@ -40,7 +40,10 @@
       "Bash(powershell -Command \"Get-Process -Name python -ErrorAction SilentlyContinue | Select-Object Id, ProcessName\")",
       "Bash(powershell -Command \"Get-WmiObject Win32_Process -Filter 'ProcessId=17456' | Select-Object ProcessId, CommandLine\")",
       "Bash(powershell -Command \"Stop-Process -Id 17456 -Force\")",
-      "Bash(curl -s -X POST http://127.0.0.1:5000/generate -F \"job_description=Test job description that is long enough to pass the fifty character validation minimum\" -F \"user_notes=\")"
+      "Bash(curl -s -X POST http://127.0.0.1:5000/generate -F \"job_description=Test job description that is long enough to pass the fifty character validation minimum\" -F \"user_notes=\")",
+      "Bash(pip3 --version)",
+      "Bash(pip3 install:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 14704 -Force\")"
     ]
   },
   "hooks": {
