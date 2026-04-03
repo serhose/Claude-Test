@@ -106,8 +106,22 @@ Return a JSON object with this structure:
       "finance": [], "business": [], "certifications": [],
       "languages": [{"language": "", "level": ""}]
     }
+  },
+  "gap_report": {
+    "covered": ["skill or requirement found in resumes and included"],
+    "bridged": [
+      {
+        "jd_requirement": "exact term or skill from JD not found in resumes",
+        "bridge": "what was emphasized instead and why it is a genuine proxy"
+      }
+    ]
   }
 }
+
+The gap_report is mandatory:
+- "covered": list the key JD requirements (skills, tools, concepts) that ARE present in the resumes and were included
+- "bridged": list JD requirements NOT found in the resumes — for each, explain what real experience was used as the closest honest proxy
+- Be specific and honest — this report is shown to the candidate so they know exactly how their CV was positioned
 
 Note: for roles with multiple positions at the same company, use this structure instead:
 {
@@ -161,9 +175,9 @@ Return the result as a JSON object following the output format above."""
     except json.JSONDecodeError as e:
         raise ValueError(f"AI returned invalid JSON: {e}\n\nRaw output:\n{raw[:500]}")
 
-    # Support both wrapped {"cv": {...}} and flat format
     tailored = result.get("cv", result)
-    return tailored
+    gap_report = result.get("gap_report", {"covered": [], "bridged": []})
+    return tailored, gap_report
 
 
 def refine_cv(current_cv: dict, user_message: str) -> tuple[dict, str]:

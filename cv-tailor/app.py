@@ -39,7 +39,7 @@ def generate():
     user_notes = request.form.get("user_notes", "").strip()
 
     try:
-        tailored_data = tailor_cv(job_description, user_notes)
+        tailored_data, gap_report = tailor_cv(job_description, user_notes)
         docx_bytes = render_cv(tailored_data)
     except ValueError as e:
         return jsonify({"error": str(e)}), 500
@@ -49,7 +49,7 @@ def generate():
     _state["cv_data"] = tailored_data
     _state["docx_bytes"] = docx_bytes
 
-    return jsonify({"ready": True})
+    return jsonify({"ready": True, "gap_report": gap_report})
 
 
 @app.route("/download")

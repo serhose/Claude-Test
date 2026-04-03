@@ -73,6 +73,24 @@
     .dl-btn-sm { padding: 6px 12px; background: #eef2ff; color: #4338ca; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
     .dl-btn-sm:hover { background: #e0e7ff; }
 
+    /* ── Gap Report ── */
+    #gapCard { display: none; }
+    #gapCard.visible { display: block; }
+    .gap-header { margin-bottom: 16px; }
+    .gap-header h2 { font-size: 1rem; font-weight: 700; color: #111; }
+    .gap-header p { font-size: 0.82rem; color: #888; margin-top: 4px; }
+    .gap-section-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .gap-covered { margin-bottom: 18px; }
+    .gap-covered .gap-section-title { color: #059669; }
+    .gap-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .gap-tag { background: #ecfdf5; color: #065f46; border-radius: 20px; padding: 4px 11px; font-size: 0.8rem; font-weight: 500; }
+    .gap-tag::before { content: "✓ "; }
+    .gap-bridged .gap-section-title { color: #d97706; }
+    .gap-bridge-item { display: flex; gap: 10px; padding: 10px 13px; background: #fffbeb; border-radius: 8px; margin-bottom: 8px; font-size: 0.84rem; }
+    .gap-bridge-item .bridge-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .gap-bridge-item .bridge-text strong { color: #92400e; display: block; margin-bottom: 2px; }
+    .gap-bridge-item .bridge-text span { color: #555; line-height: 1.5; }
+
     /* ── Chat ── */
     #chatCard { display: none; }
     #chatCard.visible { display: block; }
@@ -133,6 +151,15 @@
     </div>
   </div>
 
+  <!-- ── Gap Report Card ── -->
+  <div class="card" id="gapCard">
+    <div class="gap-header">
+      <h2>Positioning Report</h2>
+      <p>What was found in your resumes vs. what was bridged for this role.</p>
+    </div>
+    <div id="gapContent"></div>
+  </div>
+
   <!-- ── Chat Card ── -->
   <div class="card" id="chatCard">
     <div class="chat-header">
@@ -156,6 +183,7 @@
   const loadingMsg   = document.getElementById("loadingMsg");
   const errorMsg     = document.getElementById("errorMsg");
   const resultsPanel = document.getElementById("resultsPanel");
+  const gapCard      = document.getElementById("gapCard");
   const chatCard     = document.getElementById("chatCard");
   const messagesEl   = document.getElementById("messages");
   const chatInput    = document.getElementById("chatInput");
@@ -186,6 +214,7 @@
     submitBtn.disabled = true;
     errorMsg.classList.remove("visible");
     resultsPanel.classList.remove("visible");
+    gapCard.classList.remove("visible");
     chatCard.classList.remove("visible");
     loadingRow.classList.add("visible");
     startLoadingAnimation();
@@ -198,6 +227,8 @@
 
       await downloadLatest();
       resultsPanel.classList.add("visible");
+
+      if (data.gap_report) renderGapReport(data.gap_report);
 
       chatCard.classList.add("visible");
       messagesEl.innerHTML = "";
@@ -213,6 +244,36 @@
       stopLoadingAnimation();
     }
   });
+
+  // ── Gap Report ────────────────────────────────────────────────────────
+
+  function renderGapReport(report) {
+    let html = "";
+
+    if (report.covered?.length) {
+      html += `<div class="gap-covered">
+        <div class="gap-section-title">Found in your resumes — included</div>
+        <div class="gap-tags">${report.covered.map(t => `<span class="gap-tag">${t}</span>`).join("")}</div>
+      </div>`;
+    }
+
+    if (report.bridged?.length) {
+      html += `<div class="gap-bridged">
+        <div class="gap-section-title">Not in your resumes — here's how it was bridged</div>
+        ${report.bridged.map(b => `
+          <div class="gap-bridge-item">
+            <div class="bridge-icon">⚠</div>
+            <div class="bridge-text">
+              <strong>${b.jd_requirement}</strong>
+              <span>${b.bridge}</span>
+            </div>
+          </div>`).join("")}
+      </div>`;
+    }
+
+    document.getElementById("gapContent").innerHTML = html;
+    gapCard.classList.add("visible");
+  }
 
   // ── Refine ────────────────────────────────────────────────────────────
 
